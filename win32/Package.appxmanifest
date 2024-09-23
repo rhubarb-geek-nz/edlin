@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+	IgnorableNamespaces="uap rescap"
+	xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+	xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+	xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+	xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+	xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+>
+	<Identity
+		Name="9611rhubarb.geek.nz.edlin"
+		Version="$(FULLVERS)"
+		Publisher="CN=rhubarb-geek-nz, E=rhubarb-geek-nz@users.sourceforge.net"
+		ProcessorArchitecture="$(VSCMD_ARG_TGT_ARCH)"
+	/>
+	<Properties>
+		<DisplayName>edlin</DisplayName>
+		<PublisherDisplayName>rhubarb-geek-nz</PublisherDisplayName>
+		<Description>Text Editor based on MS-DOS edlin</Description>
+		<Logo>assets\StoreLogo.png</Logo>
+	</Properties>
+	<Resources>
+		<Resource Language="en-us" />
+	</Resources>
+	<Dependencies>
+		<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.18362.0" />
+	</Dependencies>
+	<Capabilities>
+		<rescap:Capability Name="runFullTrust"/>
+	</Capabilities>
+	<Applications>
+		<Application Id="App" Executable="edlin.exe" EntryPoint="Windows.FullTrustApplication">
+			<Extensions>
+				<uap3:Extension
+					Category="windows.appExecutionAlias"
+					EntryPoint="Windows.FullTrustApplication"
+					Executable="edlin.exe"
+				>
+					<uap3:AppExecutionAlias>
+						<desktop:ExecutionAlias Alias="edlin.exe" />
+					</uap3:AppExecutionAlias>
+				</uap3:Extension>
+			</Extensions>
+			<uap:VisualElements
+				DisplayName="edlin"
+				Description="Text Editor based on MS-DOS edlin"
+				Square150x150Logo="assets\Square150x150Logo.png"
+				Square44x44Logo="assets\Square44x44Logo.png"
+				BackgroundColor="transparent"
+			/>
+		</Application>
+	</Applications>
+</Package>
