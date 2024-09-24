@@ -290,7 +290,7 @@ static void exitHandler(void)
 	edlinFlush();
 }
 
-int edlinPrint(const char* p, size_t len)
+int edlinPrint(const unsigned char* p, size_t len)
 {
 	int result = 0;
 
@@ -332,7 +332,7 @@ int edlinPrint(const char* p, size_t len)
 	return result;
 }
 
-int edlinPrintLine(const char* p, size_t len)
+int edlinPrintLine(const unsigned char* p, size_t len)
 {
 	int rc = edlinPrint(p, len);
 

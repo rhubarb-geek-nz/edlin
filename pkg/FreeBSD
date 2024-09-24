@@ -1,0 +1,39 @@
+#!/bin/sh -e
+# Copyright (c) 2024 Roger Brown.
+# Licensed under the MIT License.
+
+VERSION=$( . ./version ; echo $VERSION )
+PKGNAME=edlin
+
+cleanup()
+{
+	rm -rf root MANIFEST PLIST
+}
+
+trap cleanup 0
+
+cleanup
+
+mkdir -p root/usr/bin root/usr/share/man/man1
+
+cp edlin root/usr/bin
+strip root/usr/bin/edlin
+gzip < edlin.1 > root/usr/share/man/man1/edlin.1.gz
+
+cat > MANIFEST <<EOF
+name $PKGNAME
+version $VERSION
+desc "Simple, interactive, command line text editor."
+www https://github.com/rhubarb-geek-nz/edlin
+origin editors/edlin
+comment Text Editor based on MS-DOS edlin
+maintainer rhubarb-geek-nz@users.sourceforge.net
+prefix /usr
+EOF
+
+cat > PLIST <<EOF
+bin/edlin
+share/man/man1/edlin.1.gz
+EOF
+
+pkg create -M MANIFEST -o . -r root -v -p PLIST

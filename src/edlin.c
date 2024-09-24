@@ -3,9 +3,16 @@
  * Licensed under the MIT License.
  */
 
-#include <windows.h>
+#ifdef _WIN32
+#	include <windows.h>
+#else
+#	include <unistd.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <errno.h>
 #include "edlin.h"
 #include "edlmes.h"
 #include "readline.h"
@@ -22,8 +29,8 @@ FILE* fileTmpWrite;
 char edlinCommand, edlinOption, edlinNewFile;
 unsigned int edlinArgCount, edlinArgLength;
 long edlinArgList[4];
-const char* edlinArgValue;
-char edlinLastCommand[256];
+const unsigned char* edlinArgValue;
+unsigned char edlinLastCommand[256];
 unsigned int edlinLastCommandLen;
 
 const char edlinControlChar[] = {
@@ -35,7 +42,7 @@ const char edlinControlChar[] = {
 void edlinPrintError(errno_t err)
 {
 	const char* p = strerror(err);
-	edlinPrintLine(p, strlen(p));
+	edlinPrintLine((const unsigned char*)p, strlen(p));
 }
 
 void edExit(void)
@@ -54,12 +61,16 @@ void edExit(void)
 
 	if (tmpFileName[0])
 	{
+#ifdef _WIN32
 		_unlink(tmpFileName);
+#else
+		unlink(tmpFileName);
+#endif
 		tmpFileName[0] = 0;
 	}
 }
 
-int findChar(const char* p, char c, size_t len)
+int findChar(const unsigned char* p, char c, size_t len)
 {
 	size_t offset = 0;
 
@@ -138,7 +149,11 @@ int edlinFileRead(unsigned char* line, FILE* fp)
 			if (i < 0)
 			{
 				wchar_t replacement = 0xfffd;
+#ifdef _WIN32
 				int i = WideCharToMultiByte(fileCodePage, 0, &replacement, 1, buf, sizeof(buf), NULL, NULL);
+#else
+				int i = mbcsFromChar(fileCodePage, replacement, buf);
+#endif
 
 				if (i > 0)
 				{
@@ -261,8 +276,8 @@ void edlinAppend(void)
 
 			if (rc > 0)
 			{
-				size_t lineLen = 1 + line[0];
-				contentLow += lineLen;
+				contentLow += 1 + line[0];
+				contentLowCount++;
 			}
 
 			if (rc == 0 || rc == 1)
@@ -274,24 +289,9 @@ void edlinAppend(void)
 			}
 		}
 	}
-
-	contentLowCount = 0;
-
-	if (contentLow)
-	{
-		size_t offset = 0;
-		const unsigned char* p = contentStore;
-
-		while (offset < contentLow)
-		{
-			unsigned char lineLen = 1 + p[offset];
-			offset += lineLen;
-			contentLowCount++;
-		}
-	}
 }
 
-static int edlinParseCmd(const char* p, unsigned int len)
+static int edlinParseCmd(const unsigned char* p, unsigned int len)
 {
 	int rc = 0;
 	long value = 0;
@@ -380,7 +380,7 @@ static int edlinParseCmd(const char* p, unsigned int len)
 					return -1;
 				}
 
-				if ((argCount == edlinArgCount + 1))
+				if (argCount == (edlinArgCount + 1))
 				{
 					edlinArgList[edlinArgCount++] = (argCount < 4) ? (long)currentLine + 1 : 1;
 				}
@@ -592,8 +592,12 @@ int edlinIndexFromArg(long arg, size_t* s)
 
 int edlinPrintLinePrompt(size_t index)
 {
-	char buf[11];
+	unsigned char buf[11];
+#ifdef _WIN32
 	int i = sprintf_s(buf, sizeof(buf), "%ld:%c", (long)(index + 1), currentLine == index ? '*' : ' ');
+#else
+	int i = snprintf((char*)buf, sizeof(buf), "%ld:%c", (long)(index + 1), currentLine == index ? '*' : ' ');
+#endif
 
 	if (i < sizeof(buf))
 	{
@@ -889,7 +893,7 @@ void edlinEditSingleLine(void)
 	}
 }
 
-static int edlinMatchLine(const unsigned char* p, const char* match, size_t len)
+static int edlinMatchLine(const unsigned char* p, const unsigned char* match, size_t len)
 {
 	size_t c = *p++;
 
@@ -1259,7 +1263,6 @@ void edlinMerge(void)
 	FILE* fp;
 	errno_t err;
 	size_t index = currentLine;
-	size_t total = contentLowCount + contentHighCount;
 	char name[256];
 
 	if ((edlinArgCount > 1) || !edlinArgLength)
@@ -1276,7 +1279,12 @@ void edlinMerge(void)
 	memcpy(name, edlinArgValue, edlinArgLength);
 	name[edlinArgLength] = 0;
 
+#ifdef _WIN32
 	err = fopen_s(&fp, name, "r");
+#else
+	fp = fopen(name, "r");
+	err = fp ? 0 : errno;
+#endif
 
 	if (err || fp == NULL)
 	{
@@ -1292,7 +1300,6 @@ void edlinMerge(void)
 	{
 		size_t room = contentLength - contentLow - contentHigh;
 		unsigned char* store;
-		size_t len;
 		int i;
 
 		if (room < 256)
@@ -1307,8 +1314,7 @@ void edlinMerge(void)
 
 		if (i > 0)
 		{
-			len = store[0] + 1;
-			contentLow += len;
+			contentLow += 1 + store[0];
 			contentLowCount++;
 		}
 
@@ -1321,9 +1327,9 @@ void edlinMerge(void)
 	fclose(fp);
 }
 
-int edlinReplaceLine(size_t index, const char* matchValue, size_t matchLen)
+int edlinReplaceLine(size_t index, const unsigned char* matchValue, size_t matchLen)
 {
-	const char* replaceValue = matchValue + 1 + matchLen;
+	const unsigned char* replaceValue = matchValue + 1 + matchLen;
 	size_t replaceLen = edlinArgLength - matchLen - 1;
 	const unsigned char* p = edlinLineFromIndex(index);
 	size_t offset = 0;
@@ -1444,7 +1450,7 @@ void edlinReplace(void)
 	size_t index = currentLine + 1;
 	size_t count = contentLowCount + contentHighCount;
 	size_t total = contentLowCount + contentHighCount;
-	const char* matchValue = edlinArgValue;
+	const unsigned char* matchValue = edlinArgValue;
 	int i = findChar(matchValue, 0x1A, edlinArgLength);
 	size_t matchLen = i;
 
@@ -1544,7 +1550,11 @@ const char* makeFileName(const char* original, char* name, size_t nameLen, const
 			return name;
 		}
 
-		if (c == '/' || c == '\\')
+#ifdef _WIN32
+		if (c == '/' || c == '\\' || c == ':')
+#else
+		if (c == '/')
+#endif
 		{
 			break;
 		}
@@ -1640,12 +1650,14 @@ int edlinExit(void)
 
 	if (edlinNewFile == 0)
 	{
-		if (!makeFileName(mainFileName, fileName, sizeof(fileName), ".BAK"))
+		if (!makeFileName(mainFileName, fileName, sizeof(fileName), ".bak"))
 		{
 			return -1;
 		}
 
+#ifdef _WIN32
 		_unlink(fileName);
+#endif
 
 		if (rename(mainFileName, fileName))
 		{
@@ -1687,7 +1699,9 @@ int edMainLoop(int argc, char** argv)
 	{
 		const char* p = *++argv;
 
+#ifdef _WIN32
 		if (_stricmp(p, "/B"))
+#endif
 		{
 			if (mainFileName)
 			{
@@ -1706,7 +1720,12 @@ int edMainLoop(int argc, char** argv)
 		return 0;
 	}
 
+#ifdef _WIN32
 	err = fopen_s(&fileMainRead, mainFileName, "r");
+#else
+	fileMainRead = fopen(mainFileName, "r");
+	err = fileMainRead ? 0 : errno;
+#endif
 
 	if (err || fileMainRead == NULL)
 	{
@@ -1722,7 +1741,12 @@ int edMainLoop(int argc, char** argv)
 
 	makeFileName(mainFileName, tmpFileName, sizeof(tmpFileName), ".$$$");
 
+#ifdef _WIN32
 	err = fopen_s(&fileTmpWrite, tmpFileName, "w");
+#else
+	fileTmpWrite = fopen(tmpFileName, "w");
+	err = fileTmpWrite ? 0 : errno;
+#endif
 
 	if (err || fileTmpWrite == NULL)
 	{
@@ -1933,6 +1957,9 @@ int edMainLoop(int argc, char** argv)
 				edlinEditSingleLine();
 			}
 		}
+
+		edlinArgValue = NULL;
+		edlinArgLength = 0;
 	}
 
 	return 0;

@@ -1,0 +1,23 @@
+#!/bin/sh -e
+# Copyright (c) 2024 Roger Brown.
+# Licensed under the MIT License.
+
+PWD=$(pwd)
+VERSION=$( . ./version ; echo $VERSION )
+PKGNAME="edlin-$VERSION"
+
+cleanup()
+{
+	rm -rf bom	
+}
+
+trap cleanup 0
+
+cleanup
+
+umask 022
+
+mkdir -p bom/bin bom/share/man/man1
+cp edlin bom/bin
+gzip < edlin.1 > bom/share/man/man1/edlin.1.gz
+pkgbuild --root bom --identifier nz.geek.rhubarb.edlin --version "$VERSION" --install-location /usr/local --sign "Developer ID Installer: $APPLE_DEVELOPER" "$PKGNAME.pkg"

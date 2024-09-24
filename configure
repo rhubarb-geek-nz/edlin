@@ -1,0 +1,37 @@
+#!/bin/sh -e
+# Copyright (c) 2024 Roger Brown.
+# Licensed under the MIT License.
+
+if test -z "$CC"
+then
+	CC=cc
+fi
+
+rm -rf config.h
+
+cleanup()
+{
+	rm -rf a.out a.c
+}
+
+trap cleanup 0
+
+cleanup
+
+cat > a.c << EOF
+#include <stdio.h>
+int main(int argc,char **argv) { return 0; }
+EOF
+$CC $CFLAGS a.c
+
+cat /dev/null >  config.h
+
+cat > a.c << EOF
+#include <termios.h>
+struct termios t;
+int main(int argc,char **argv) { cfmakeraw(&t); return 0; }
+EOF
+if $CC $CFLAGS a.c
+then
+	echo "#define HAVE_CFMAKERAW 1" >> config.h
+fi

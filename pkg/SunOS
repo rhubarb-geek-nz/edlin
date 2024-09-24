@@ -1,0 +1,62 @@
+#!/bin/sh -e
+# Copyright (c) 2024 Roger Brown.
+# Licensed under the MIT License.
+
+VERSION=$( . ./version ; echo $VERSION )
+PWD=$(pwd)
+APPNAME=edlin
+PKGNAME=RHBedlin
+DESCRIPTION="Text Editor based on MS-DOS edlin"
+INTDIR="$PWD/data"
+PKGROOT="$INTDIR/pkgroot"
+PKGTMP="$INTDIR/pkgtmp"
+
+cleanup()
+{
+	rm -rf "$INTDIR"
+}
+
+umask 022
+
+cleanup
+
+trap cleanup 0
+
+mkdir -p "$PKGROOT/bin" "$PKGROOT/share/man/man1" "$PKGTMP"
+
+cp "$APPNAME" "$PKGROOT/bin"
+cp "$APPNAME.1" "$PKGROOT/share/man/man1"
+
+if file edlin | grep " AMD64 "
+then
+	PKGARCH=amd64
+else
+	PKGARCH=$(uname -p)
+fi
+
+PKGFILE="$PKGNAME-$VERSION-$PKGARCH.pkg"
+
+rm -rf "$PKGFILE"
+
+(
+	echo "ARCH=\"$PKGARCH\""
+	echo "CATEGORY=\"utility\""
+	echo "NAME=\"$DESCRIPTION\""
+	echo "PKG=\"$PKGNAME\""
+	echo "VERSION=\"$VERSION\""
+	echo "BASEDIR=\"/usr\""
+) >"$INTDIR/pkginfo"
+
+(
+	echo i pkginfo
+	echo f none "bin/$APPNAME" 0755 root root
+	echo f none "share/man/man1/$APPNAME.1" 0444 root root
+) >"$INTDIR/prototype"
+
+pkgmk -o -r "$PKGROOT" -d "$PKGTMP" -f "$INTDIR/prototype" "$PKGNAME"
+
+touch "$PKGFILE"
+
+pkgtrans -s "$PKGTMP" "$PKGFILE" "$PKGNAME"
+
+pkginfo -l -d "$PKGFILE"

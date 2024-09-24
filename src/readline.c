@@ -3,9 +3,12 @@
  * Licensed under the MIT License.
  */
 
-#include <windows.h>
+#ifdef _WIN32
+#	include <windows.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "edlin.h"
 #include "readline.h"
 #include "mbcs.h"
@@ -14,7 +17,7 @@
 static unsigned int edlinMeasure(struct edlinReadline* line, unsigned int len)
 {
 	unsigned int column = line->leftColumn;
-	unsigned int offset = 0, remaining = line->lineLen;
+	unsigned int remaining = line->lineLen;
 	unsigned char* p = line->line;
 
 	while (len)
@@ -23,7 +26,6 @@ static unsigned int edlinMeasure(struct edlinReadline* line, unsigned int len)
 
 		if (*p == 9)
 		{
-			offset++;
 			p++;
 			remaining--;
 			column = (column + line->tabWidth) & (~(line->tabWidth - 1));
@@ -33,7 +35,6 @@ static unsigned int edlinMeasure(struct edlinReadline* line, unsigned int len)
 		{
 			if ((c < 0x20) || (c == 0x7f))
 			{
-				offset++;
 				p++;
 				column += 2;
 				remaining--;
@@ -44,7 +45,6 @@ static unsigned int edlinMeasure(struct edlinReadline* line, unsigned int len)
 				int i = mbcsLen(fileCodePage, p, remaining);
 				p += i;
 				remaining -= i;
-				offset += i;
 				column++;
 				len -= i;
 			}
@@ -57,7 +57,7 @@ static unsigned int edlinMeasure(struct edlinReadline* line, unsigned int len)
 void edlinPaint(struct edlinReadline* line)
 {
 	unsigned int column = line->leftColumn, len = line->lineLen;
-	const char* p = line->line;
+	const unsigned char* p = line->line;
 
 	while ((column < line->currentColumn) && len)
 	{
@@ -105,7 +105,7 @@ void edlinPaint(struct edlinReadline* line)
 
 			while (column > line->currentColumn)
 			{
-				char buf[8];
+				unsigned char buf[8];
 				unsigned int bufLen = column - line->currentColumn;
 
 				if (bufLen > sizeof(buf))
@@ -124,7 +124,7 @@ void edlinPaint(struct edlinReadline* line)
 		{
 			if ((c < 0x20) || (c == 0x7f))
 			{
-				char buf[] = { '^','?' };
+				unsigned char buf[] = { '^','?' };
 
 				if (c < 0x20)
 				{
@@ -191,7 +191,7 @@ static int edlinConsume(struct edlinReadline* line, unsigned char addToLine)
 	return rc;
 }
 
-static int edlinLastLength(const char* p, size_t len)
+static int edlinLastLength(const unsigned char* p, size_t len)
 {
 	int i = 0;
 
@@ -249,11 +249,11 @@ static void edlinBackspace(struct edlinReadline* line)
 		if (newLen != line->lineLen)
 		{
 			unsigned int newColumn = edlinMeasure(line, newLen);
-			unsigned int diff = line->lineLen - newLen;
 
 			while (newColumn < line->currentColumn)
 			{
-				edlinPrint("\b \b", 3);
+				static unsigned char bsb[]={8,0x20,8};
+				edlinPrint(bsb, sizeof(bsb));
 				line->currentColumn--;
 			}
 
@@ -323,10 +323,12 @@ int edlinReadLine(struct edlinReadline* line)
 
 		if (ch)
 		{
-			char ansi[4];
+			unsigned char ansi[4];
 			int ansiLen;
 #ifdef _WIN32
 			BOOL defaultCharUsed = FALSE;
+#else
+			char defaultCharUsed = FALSE;
 #endif
 
 			switch (ch)
@@ -415,7 +417,7 @@ int edlinConfirm(const char* str, wchar_t* pch)
 	{
 		if (ch && strchr(str, ch))
 		{
-			char buf[32];
+			unsigned char buf[32];
 #ifdef _WIN32
 			int i = WideCharToMultiByte(fileCodePage, 0, &ch, 1, buf, sizeof(buf), NULL, NULL);
 #else

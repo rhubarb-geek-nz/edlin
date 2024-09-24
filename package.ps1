@@ -15,7 +15,7 @@ trap
 	throw $PSItem
 }
 
-$Version = '0.9.0'
+$Version = (Get-Content "$PSScriptRoot/version").Split('=')[-1]
 
 Write-Output "Version is $Version"
 

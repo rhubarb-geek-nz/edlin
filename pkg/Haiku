@@ -1,0 +1,53 @@
+#!/bin/sh -e
+# Copyright (c) 2024 Roger Brown.
+# Licensed under the MIT License.
+
+VERSION=$( . ./version ; echo $VERSION )
+
+RELEASE=1
+PKGNAME=edlin
+PKGARCH=$(getarch)
+PACKAGE="$PKGNAME-$VERSION-$RELEASE-$PKGARCH.hpkg"
+
+mkdir data
+
+trap 'rm -rf data' 0
+
+(
+	set -e
+
+	mkdir -p data/bin data/documentation/man/man1
+
+	cp edlin data/bin
+	cp edlin.1 data/documentation/man/man1
+
+	cd data
+
+	echo > .PackageInfo "name $PKGNAME
+version $VERSION-$RELEASE
+architecture $PKGARCH
+summary \"Text Editor based on MS-DOS edlin\"
+description \"Simple, interactive, command line text editor.\"
+packager \"rhubarb-geek-nz@users.sourceforge.net\"
+vendor \"rhubarb-geek-nz\"
+copyrights \"$COPYRIGHT\"
+licenses \"MIT\"
+urls {
+	"https://github.com/rhubarb-geek-nz/edlin"
+}
+source-urls {
+	"https://github.com/rhubarb-geek-nz/edlin.git"
+}
+flags {
+	system_package
+}
+provides {
+	$PKGNAME = $VERSION-$RELEASE
+	cmd:edlin
+}"	
+
+	package create -b "$PACKAGE"
+	package add "$PACKAGE" bin documentation
+	package list "$PACKAGE"
+	mv "$PACKAGE" ..
+)

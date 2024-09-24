@@ -1,16 +1,17 @@
 # Copyright (c) 2024 Roger Brown.
 # Licensed under the MIT License.
 
-SRC=..\src\edlin.c ..\src\readline.c ..\src\mbcs.c edwin.c
+APPNAME=edlin
+SRC=..\src\$(APPNAME).c ..\src\readline.c ..\src\mbcs.c edwin.c
 CL=cl
 OBJDIR=obj\$(VSCMD_ARG_TGT_ARCH)
 BINDIR=bin\$(VSCMD_ARG_TGT_ARCH)
 BUNDLE=bundle
-RESFILE=$(OBJDIR)\edlin.res
-APP=$(BINDIR)\edlin.exe
-MSI=edlin-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).msi
-MSIX=$(BUNDLE)\edlin-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).msix
-MSIXBUNDLE=edlin-$(DEPVERS_edlin_STR4).msixbundle
+RESFILE=$(OBJDIR)\$(APPNAME).res
+APP=$(BINDIR)\$(APPNAME).exe
+MSI=$(APPNAME)-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).msi
+MSIX=$(BUNDLE)\$(APPNAME)-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).msix
+MSIXBUNDLE=$(APPNAME)-$(DEPVERS_edlin_STR4).msixbundle
 
 all: $(APP) $(MSI) $(MSIX)
 	
@@ -37,14 +38,17 @@ $(APP): $(SRC) $(OBJDIR) $(BINDIR) $(RESFILE)
 		/PDB:NONE					\
 		/SUBSYSTEM:CONSOLE			\
 		user32.lib					\
-		/DEF:edlin.def				\
-		$(RESFILE)
-	del "$(BINDIR)\edlin.exp"
-	del "$(BINDIR)\edlin.lib"
+		/DEF:$(APPNAME).def			\
+		$(RESFILE)					\
+		/MANIFEST
+	mt -manifest $(APPNAME).manifest $@.manifest -outputresource:$@;#1
+	del $@.manifest
+	del "$(BINDIR)\$(APPNAME).exp"
+	del "$(BINDIR)\$(APPNAME).lib"
 	signtool sign /sha1 "$(CertificateThumbprint)" /fd SHA256 /t http://timestamp.digicert.com $@
 
-$(RESFILE): edlin.rc
-	rc /r /I..\src $(RCFLAGS) "/DDEPVERS_edlin_INT4=$(DEPVERS_edlin_INT4)" "/DDEPVERS_edlin_STR4=\"$(DEPVERS_edlin_STR4)\"" /fo$@ edlin.rc
+$(RESFILE): $(APPNAME).rc
+	rc /r /I..\src $(RCFLAGS) "/DDEPVERS_edlin_INT4=$(DEPVERS_edlin_INT4)" "/DDEPVERS_edlin_STR4=\"$(DEPVERS_edlin_STR4)\"" /fo$@ $(APPNAME).rc
 
 $(OBJDIR) $(BINDIR) $(BUNDLE):
 	mkdir $@
@@ -53,14 +57,14 @@ $(MSI): $(APP) $(CHM)
 	"$(WIX)bin\candle.exe" -nologo "wix\$(VSCMD_ARG_TGT_ARCH).wxs" -dDEPVERS_edlin_STR4=$(DEPVERS_edlin_STR4)
 	"$(WIX)bin\light.exe" -nologo -cultures:null -out $@ "$(VSCMD_ARG_TGT_ARCH).wixobj"
 	del "$(VSCMD_ARG_TGT_ARCH).wixobj"
-	del "edlin-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).wixpdb"
+	del "$(APPNAME)-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).wixpdb"
 	signtool sign /sha1 "$(CertificateThumbprint)" /fd SHA256 /t http://timestamp.digicert.com $@
 
 $(MSIX): $(BUNDLE) $(APP)
 	COPY /Y $(APP)
-	DIR edlin.exe
+	DIR $(APPNAME).exe
 	makeappx pack /m AppxManifest.xml /f mapping.ini /p $@
-	DEL edlin.exe
+	DEL $(APPNAME).exe
 	signtool sign /sha1 "$(BundleThumbprint)" /fd SHA256 /t http://timestamp.digicert.com $@
 
 $(MSIXBUNDLE):

@@ -1,0 +1,85 @@
+#!/bin/sh -e
+
+VERSION=$( . ./version ; echo $VERSION )
+PKGNAME=edlin
+
+trap 'rm edlin.qpg' 0
+
+cat >edlin.qpg <<EOF
+<QPG:Generation>
+   <QPG:Options>
+      <QPG:User unattended="no" verbosity="2" listfiles="yes"/>
+      <QPG:Defaults type="qnx_package"/>
+      <QPG:Source></QPG:Source>
+      <QPG:Release number="+"/>
+      <QPG:Build></QPG:Build>
+      <QPG:FileSorting strip="yes"/>
+      <QPG:Package targets="combine"/>
+      <QPG:Repository generate="yes"/>
+      <QPG:FinalDir></QPG:FinalDir>
+      <QPG:Cleanup></QPG:Cleanup>
+   </QPG:Options>
+
+   <QPG:Responsible>
+      <QPG:Company></QPG:Company>
+      <QPG:Department></QPG:Department>
+      <QPG:Group></QPG:Group>
+      <QPG:Team></QPG:Team>
+      <QPG:Employee></QPG:Employee>
+      <QPG:EmailAddress></QPG:EmailAddress>
+   </QPG:Responsible>
+
+   <QPG:Values>
+      <QPG:Files>
+         <QPG:Add file="edlin" install="/usr/bin/" tos="qnx6"/>
+      </QPG:Files>
+
+      <QPG:PackageFilter>
+         <QPM:PackageManifest>
+            <QPM:PackageDescription>
+               <QPM:PackageType>Application</QPM:PackageType>
+               <QPM:FileVersion>2.6</QPM:FileVersion>
+               <QPM:DateCode>4bbe8479</QPM:DateCode>
+            </QPM:PackageDescription>
+
+            <QPM:ProductDescription>
+               <QPM:ProductName>edlin</QPM:ProductName>
+               <QPM:ProductIdentifier>edlin</QPM:ProductIdentifier>
+               <QPM:VendorName>Public</QPM:VendorName>
+               <QPM:VendorInstallName>public</QPM:VendorInstallName>
+               <QPM:AuthorName>Roger Brown</QPM:AuthorName>
+               <QPM:ProductDescriptionShort>Text Editor based on MS-DOS edlin</QPM:ProductDescriptionShort>
+               <QPM:ProductDescriptionLong>Simple, interactive, command line text editor.</QPM:ProductDescriptionLong>
+            </QPM:ProductDescription>
+
+            <QPM:ReleaseDescription>
+               <QPM:ReleaseVersion>$VERSION</QPM:ReleaseVersion>
+               <QPM:ReleaseUrgency>Medium</QPM:ReleaseUrgency>
+               <QPM:ReleaseStability>Stable</QPM:ReleaseStability>
+               <QPM:ReleaseNoteMinor>General release</QPM:ReleaseNoteMinor>
+               <QPM:ReleaseNoteMajor>General release</QPM:ReleaseNoteMajor>
+               <QPM:ReleaseCopyright>Copyright (c) 2024 Roger Brown. Licensed under the MIT License</QPM:ReleaseCopyright>
+            </QPM:ReleaseDescription>
+
+            <QPM:ContentDescription>
+               <QPM:ContentTopic xmlmultiple="true">Text Editing and Processing/Text Editors</QPM:ContentTopic>
+               <QPM:ContentKeyword>edlin</QPM:ContentKeyword>
+               <QPM:DisplayEnvironment xmlmultiple="true">Console</QPM:DisplayEnvironment>
+               <QPM:TargetAudience xmlmultiple="true">User</QPM:TargetAudience>
+               <QPM:TargetOS>qnx6</QPM:TargetOS>
+            </QPM:ContentDescription>
+         </QPM:PackageManifest>
+      </QPG:PackageFilter>
+
+      <QPG:PackageFilter proc="none" target="none">
+         <QPM:PackageManifest></QPM:PackageManifest>
+      </QPG:PackageFilter>
+
+      <QPG:PackageFilter proc="x86" target="none">
+         <QPM:PackageManifest></QPM:PackageManifest>
+      </QPG:PackageFilter>
+   </QPG:Values>
+</QPG:Generation>
+EOF
+
+packager -u edlin.qpg

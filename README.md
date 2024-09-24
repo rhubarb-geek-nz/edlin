@@ -1,6 +1,6 @@
 # rhubarb-geek-nz/edlin
 
-Modern Win32 implementation of [edlin](https://en.wikipedia.org/wiki/Edlin) in [C](https://en.wikipedia.org/wiki/C_(programming_language)).
+Modern implementation of [edlin](https://en.wikipedia.org/wiki/Edlin) in [C](https://en.wikipedia.org/wiki/C_(programming_language)).
 
 Reference is the [MS-DOS v2.0 version of edlin](https://github.com/microsoft/MS-DOS/blob/main/v2.0/source/EDLIN.ASM).
 

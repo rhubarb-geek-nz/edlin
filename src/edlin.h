@@ -3,6 +3,17 @@
  * Licensed under the MIT License.
  */
 
+#ifdef _WIN32
+#else
+#	define MAX_PATH	260
+#	define FALSE 0
+#	define TRUE	1
+#	define _countof(x)     		(sizeof(x)/sizeof(x[0]))
+#	define strcat_s(a,b,c)		strncat(a,c,b)
+#	define strcpy_s(a,b,c)		strncpy(a,c,b)
+typedef int errno_t;
+#endif
+
 extern unsigned int consoleCodePage, fileCodePage;
 extern unsigned char insertMode;
 
@@ -23,12 +34,12 @@ extern size_t contentHighCount;         /* count of lines in high area */
  * parsed command elements 
  */
 
-extern char edlinCommand;               /* command, uppercase */
-extern char edlinOption;                /* if ? was present */
-extern unsigned int edlinArgCount;      /* numerics before command */
-extern long edlinArgList[];             /* numerics before command */
-extern const char* edlinArgValue;       /* parameter after command */
-extern unsigned int edlinArgLength;     /* parameter after command */
+extern char edlinCommand;                    /* command, uppercase */
+extern char edlinOption;                     /* if ? was present */
+extern unsigned int edlinArgCount;           /* numerics before command */
+extern long edlinArgList[];                  /* numerics before command */
+extern const unsigned char* edlinArgValue;   /* parameter after command */
+extern unsigned int edlinArgLength;          /* parameter after command */
 
 /*******************************
  * file data
@@ -44,8 +55,8 @@ extern const char* mainFileName;
 
 extern int edlinStdIn(wchar_t* ch);
 extern int edlinChar(unsigned short* vk, wchar_t* ch);
-extern int edlinPrint(const char*, size_t);
-extern int edlinPrintLine(const char*, size_t);
+extern int edlinPrint(const unsigned char*, size_t);
+extern int edlinPrintLine(const unsigned char*, size_t);
 extern int edlinPrintMessage(int message);
 extern void edlinFlush(void);
 extern const char edlinControlChar[];
@@ -53,7 +64,7 @@ extern const char edlinControlChar[];
 extern int edMainLoop(int argc, char** argv);
 extern void edExit(void);
 extern unsigned char* edlinLineFromIndex(size_t);
-extern int findChar(const char* p, char c, size_t len);
+extern int findChar(const unsigned char* p, char c, size_t len);
 
 /********************************
  * fin

@@ -1,0 +1,43 @@
+#!/bin/sh -e
+# Copyright (c) 2024 Roger Brown.
+# Licensed under the MIT License.
+
+VERSION=$( . ./version ; echo $VERSION )
+PKGNAME="edlin-$VERSION.tgz"
+
+cleanup()
+{
+	rm -rf root meta
+}
+
+trap cleanup 0
+
+cleanup
+
+mkdir -p root/usr/bin root/usr/share/man/man1 meta
+
+cp edlin root/usr/bin
+strip root/usr/bin/edlin
+cp edlin.1 root/usr/share/man/man1
+
+(
+	echo HOMEPAGE=https://github.com/rhubarb-geek-nz/edlin
+	echo MACHINE_ARCH=$(uname -p)
+	echo OPSYS=$(uname -s)
+	echo OS_VERSION=$(uname -r)
+	echo PKGTOOLS_VERSION=$(pkg_info -V)
+) > meta/BUILD_INFO
+
+cat > meta/CONTENTS << EOF
+@name edlin-$VERSION
+usr/bin/edlin
+usr/share/man/man1/edlin.1
+EOF
+
+echo "Text Editor based on MS-DOS edlin" >"meta/COMMENT"
+
+cat >"meta/DESC" <<EOF
+Simple, interactive, command line text editor.
+EOF
+
+pkg_create -v -B meta/BUILD_INFO -c meta/COMMENT -g wheel -u root -d meta/DESC -I / -f meta/CONTENTS -p root -F gzip "$PKGNAME"

@@ -1,0 +1,56 @@
+#!/bin/sh -e
+# Copyright (c) 2024 Roger Brown.
+# Licensed under the MIT License.
+
+VERSION=$( . ./version ; echo $VERSION )
+PKGNAME="edlin-$VERSION.tgz"
+
+cleanup()
+{
+	rm -rf root meta unsigned edlin-$VERSION-pkg.sec
+}
+
+trap cleanup 0
+
+cleanup
+
+mkdir -p root/usr/bin root/usr/share/man/man1 meta unsigned 
+
+cp edlin root/usr/bin
+strip root/usr/bin/edlin
+cp edlin.1 root/usr/share/man/man1
+
+cat > meta/CONTENTS << EOF
+usr/bin/edlin
+usr/share/man/man1/edlin.1
+EOF
+
+echo "Text Editor based on MS-DOS edlin" >"meta/COMMENT"
+
+cat >"meta/DESC" <<EOF
+Simple, interactive, command line text editor.
+EOF
+
+COMMENT="Text Editor based on MS-DOS edlin"
+MACHINE_ARCH=$(uname -p)
+HOMEPAGE=https://github.com/rhubarb-geek-nz/edlin
+MAINTAINER=rhubarb-geek-nz@users.sourceforge.net
+FULLPKGPATH=editors/edlin
+FTP=yes
+
+pkg_create \
+		-A "$MACHINE_ARCH"\
+		-d meta/DESC \
+		-D "COMMENT=$COMMENT" \
+		-D "HOMEPAGE=$HOMEPAGE" \
+		-D "MAINTAINER=$MAINTAINER" \
+		-D "FULLPKGPATH=$FULLPKGPATH" \
+		-D "FTP=$FTP" \
+		-f meta/CONTENTS \
+		-B root \
+		-p / \
+		"unsigned/$PKGNAME"
+
+signify -G -n -c "edlin-$VERSION package" -s edlin-$VERSION-pkg.sec -p edlin-$VERSION-pkg.pub
+
+pkg_sign -s signify2 -s edlin-$VERSION-pkg.sec -o . -S unsigned

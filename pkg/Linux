@@ -1,0 +1,291 @@
+#!/bin/sh -e
+# Copyright (c) 2024 Roger Brown.
+# Licensed under the MIT License.
+
+cleanup()
+{
+	rm -rf data rpms rpm.spec
+}
+
+umask 022
+
+cleanup
+
+trap cleanup 0
+
+VERSION=$( . ./version ; echo $VERSION )
+PWD=$(pwd)
+ISSLACK=false
+ISRPM=false
+ISDEB=false
+ISIPK=false
+ISTERMUX=false
+
+if test -f /etc/os-release
+then
+	for d in $( . /etc/os-release ; echo $ID $ID_LIKE )
+	do
+		case "$d" in
+			debian )
+				ISDEB=true
+				;;
+			fedora | centos | rhel | mariner | suse | opensuse )
+				ISRPM=true
+				;;
+			slackware )
+				ISSLACK=true
+				;;
+			openwrt )
+				ISIPK=true
+				;;
+		esac
+	done
+fi
+
+if test -n "$TERMUX_MAIN_PACKAGE_FORMAT"
+then
+	ISTERMUX=true
+fi
+
+PKGNAME=edlin
+
+mkdir -p data/usr/bin rpms "data/usr/share/doc/$PKGNAME" "data/usr/share/man/man1"
+
+cp edlin data/usr/bin
+
+strip data/usr/bin/edlin
+
+sed --quiet < src/edlin.c '/\*\*\*\*/,/^ \*\//p' | grep -v '\*\*\*' | grep -v '^ \*/' | while read A B
+do
+	echo "$B"
+done | ( 
+	while read A
+	do
+		if test -n "$A"
+		then
+			echo "$A"
+			break
+		fi
+	done
+	cat 
+) > "data/usr/share/doc/$PKGNAME/copyright"
+
+if git config --get remote.origin.url
+then
+	(
+		set -e
+		git config --get remote.origin.url
+		TZ=UTC git log --oneline src/edlin.c
+	) > "data/usr/share/doc/$PKGNAME/changelog"
+else
+	if svn info .
+	then
+		(
+			set -e
+			svn info . | grep "^URL: " | while read A B
+			do
+				echo "$B"
+			done
+			TZ=UTC svn log src/edlin.c
+		) > "data/usr/share/doc/$PKGNAME/changelog"
+	fi
+fi
+
+if test -f "data/usr/share/doc/$PKGNAME/changelog"
+then
+	gzip "data/usr/share/doc/$PKGNAME/changelog"
+fi
+
+gzip < README.md > "data/usr/share/doc/$PKGNAME/README.md.gz"
+gzip < edlin.1 > "data/usr/share/man/man1/edlin.1.gz"
+
+if $ISDEB
+then
+	DPKGARCH=$(dpkg --print-architecture)
+	SIZE=$(du -sk data/usr | while read A B; do echo $A; done)
+	mkdir data/DEBIAN
+	cat > data/DEBIAN/control <<EOF
+Package: $PKGNAME
+Version: $VERSION
+Architecture: $DPKGARCH
+Installed-Size: $SIZE
+Maintainer: rhubarb-geek-nz@users.sourceforge.net
+Section: editors
+Priority: extra
+Description: Text Editor based on MS-DOS edlin
+ Simple, interactive, command line text editor.
+ .
+EOF
+
+	dpkg-deb --root-owner-group --build data "$PKGNAME"_"$VERSION"_"$DPKGARCH".deb
+
+	rm -rf data/DEBIAN
+fi
+
+if $ISRPM
+then
+	(
+		set -e
+
+		cd "$PWD/data"
+
+		cat <<EOF
+Summary: Text Editor based on MS-DOS edlin
+Name: edlin
+Version: $VERSION
+Release: 1
+Group: Applications/System
+License: MIT
+Prefix: /usr
+
+%description
+Simple, interactive, command line text editor.
+
+%files
+%defattr(-,root,root)
+%attr(555,root,root) /usr/bin/edlin
+%dir %attr(555,root,root) /usr/share/doc/edlin
+%attr(444,root,root) /usr/share/doc/edlin/README.md.gz
+EOF
+
+		if test -f "usr/share/doc/edlin/changelog.gz"
+		then
+			cat <<EOF
+%attr(444,root,root) /usr/share/doc/edlin/changelog.gz
+EOF
+		fi
+
+		cat <<EOF
+%attr(444,root,root) /usr/share/doc/edlin/copyright
+%attr(444,root,root) /usr/share/man/man1/edlin.1.gz
+
+%clean
+EOF
+	) > rpm.spec
+
+	rpmbuild --buildroot "$PWD/data" --define "_rpmdir $PWD/rpms" --define "_build_id_links none" -bb "$PWD/rpm.spec" 
+
+	find rpms -name "*.rpm" -type f | while read N
+	do
+		mv "$N" .
+	done
+fi
+
+if $ISSLACK
+then
+	mkdir -p data/install data/root
+	mv data/usr/share/man data/usr/man
+	mv data/usr/share/doc data/usr/doc
+	rmdir data/usr/share
+	mv "data/usr/doc/$PKGNAME" "data/usr/doc/$PKGNAME-$VERSION"
+
+	cat > data/install/slack-desc <<EOF
+$PKGNAME: Text Editor based on MS-DOS edlin
+$PKGNAME:
+$PKGNAME: Simple, interactive, command line text editor.
+$PKGNAME: 
+$PKGNAME: 
+$PKGNAME: 
+$PKGNAME: 
+$PKGNAME: 
+$PKGNAME: 
+$PKGNAME: 
+$PKGNAME: 
+EOF
+
+	ARCH=$(uname -m)
+	OSVER=$(. /etc/os-release ; echo $VERSION_ID)
+
+	case "$ARCH" in
+		aarch64 | x86_64 )
+			;;
+		arm* )
+			ARCH=arm
+			;;
+		* )
+			ARCH=$(gcc -Q --help=target | grep "\-march=" | while read A B C; do echo $B; break; done)
+			;;
+	esac
+	
+	tar --create --owner=0 --group=0 --gzip --file "$PKGNAME-$VERSION-$ARCH-1_slack$OSVER.tgz" -C data/root . -C .. usr/bin/edlin "usr/doc/$PKGNAME-$VERSION" usr/man/man1/edlin.1.gz install/slack-desc
+fi
+
+if $ISIPK
+then
+	(
+		set -e
+		cd data
+
+		OPKGARCH=$( . /etc/os-release ; echo $OPENWRT_ARCH )
+		SIZE=$(du -sk usr/bin/edlin | while read A B; do echo $A; done)
+		cat > control <<EOF
+Package: $PKGNAME
+Version: $VERSION
+Architecture: $OPKGARCH
+Installed-Size: $SIZE
+Maintainer: rhubarb-geek-nz@users.sourceforge.net
+Section: editors
+Priority: extra
+Description: Text Editor based on MS-DOS edlin
+ Simple, interactive, command line text editor.
+ .
+EOF
+
+		echo 2.0 > debian-binary
+
+		tar --create --owner=0 --group=0 --gzip --file control.tar.gz ./control
+
+		tar --create --owner=0 --group=0 --gzip --file data.tar.gz ./usr/bin/edlin
+
+		tar --create --owner=0 --group=0 --gzip --file ../"$PKGNAME"_"$VERSION"_"$OPKGARCH".ipk ./debian-binary ./control.tar.gz ./data.tar.gz
+
+		rm control debian-binary
+	)
+fi
+
+if $ISTERMUX && test "debian" = "$TERMUX_MAIN_PACKAGE_FORMAT" && test -n "$PREFIX"
+then
+	(
+		set -e
+
+		cd data
+
+		patchelf --remove-rpath "usr/bin/edlin"
+
+		if test "$PREFIX" != "/usr"
+		then
+			mkdir -p ".$PREFIX"
+
+			mv usr/* ".$PREFIX"
+
+			rmdir usr
+		fi
+
+		DPKGARCH=$(dpkg --print-architecture)
+		SIZE=$(du -sk ".$PREFIX" | while read A B; do echo $A; done)
+		cat > control <<EOF
+Package: $PKGNAME
+Version: $VERSION
+Architecture: $DPKGARCH
+Installed-Size: $SIZE
+Maintainer: rhubarb-geek-nz@users.sourceforge.net
+Section: editors
+Priority: extra
+Description: Text Editor based on MS-DOS edlin
+ Simple, interactive, command line text editor.
+ .
+EOF
+
+		echo 2.0 > debian-binary
+
+		tar --create --owner=0 --group=0 --gzip --file control.tar.gz ./control
+
+		tar --create --owner=0 --group=0 --gzip --file data.tar.gz ".$PREFIX/bin/edlin" ".$PREFIX/share/doc/$PKGNAME" ".$PREFIX/share/man/man1/edlin.1.gz"
+
+		ar r "$PKGNAME"_"$VERSION"_"$DPKGARCH".deb debian-binary control.tar.gz data.tar.gz
+
+		rm control debian-binary
+
+		mv *.deb ..
+	)
+fi
