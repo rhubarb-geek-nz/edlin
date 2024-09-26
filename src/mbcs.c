@@ -228,6 +228,7 @@ int mbcsFromChar(unsigned int cp, wchar_t ch, unsigned char* p)
 			if (codePageList[k].codePage == cp)
 			{
 				const wchar_t* table = codePageList[k].table;
+				int i = 0;
 
 				if (ch < 256)
 				{
@@ -236,8 +237,6 @@ int mbcsFromChar(unsigned int cp, wchar_t ch, unsigned char* p)
 						break;
 					}
 				}
-
-				int i = 0;
 
 				while (i < 256)
 				{
