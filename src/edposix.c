@@ -12,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <termios.h>
+#include <nl_types.h>
 #include "edlin.h"
 #include "mbcs.h"
 #include "readline.h"
@@ -19,6 +20,8 @@
 
 static struct termios ttyAttr;
 static int restoreAttr;
+static nl_catd nlCat=(nl_catd)-1;
+static char messageYY[32], messageNN[32], messagePrompt[32];
 
 #if !defined(HAVE_CFMAKERAW)
 static void cfmakeraw(struct termios *tt)
@@ -229,9 +232,16 @@ int edlinChar(unsigned short* vk, wchar_t* ch)
 static void exitHandler(void)
 {
 	edExit();
+
 	if (restoreAttr)
 	{
 		tcsetattr(0,TCSADRAIN,&ttyAttr);
+	}
+
+	if (nlCat != (nl_catd)-1)
+	{
+		catclose(nlCat);
+		nlCat = (nl_catd)-1;
 	}
 }
 
@@ -259,7 +269,6 @@ static struct
 	const char *text;
 } edlmes[]={
     { EDLMES_EOF, "End of input file\r\n" },
-    { EDLMES_PROMPT, "*" },
     { EDLMES_QMES, "Abort edit (Y/N)? " },
     { EDLMES_BADCOM, "Entry error\r\n" },
     { EDLMES_ESCAPE, "\\\r\n" },
@@ -273,19 +282,62 @@ static struct
     { EDLMES_NEWFIL, "New file\r\n" }
 };
 
+const char *edlinGetMessage(int message)
+{
+	int count = _countof(edlmes);
+
+	switch (message)
+	{
+		case EDLMES_PROMPT: return messagePrompt;
+		case EDLMES_NN: return messageNN;
+		case EDLMES_YY: return messageYY;
+		default:
+			while (count--)
+			{
+				if (edlmes[count].id == message)
+				{
+					const char *p = edlmes[count].text;
+
+					if (nlCat != (nl_catd)-1)
+					{
+						p = catgets(nlCat, 1, message, p);
+					}
+
+					return p;
+				}
+			}
+			break;
+	}
+
+	return NULL;
+}
+
 int edlinPrintMessage(int message)
 {
 	int len = 0;
-	int count = _countof(edlmes);
-	while (count--)
+	const char *p = edlinGetMessage(message);
+
+	if (p)
 	{
-		if (edlmes[count].id == message)
+		len = strlen(p);
+
+		if (len > 0)
 		{
-			const char *p = edlmes[count].text;
-			len = write(1, p, strlen(p));			
+			len = write(1, p, len);
 		}
 	}
+
 	return len;
+}
+
+static void loadString(int message, char *str, size_t len, const char *p)
+{
+	if (nlCat != (nl_catd)-1)
+	{
+		p = catgets(nlCat, 1, message, p);
+	}
+
+	strncat(str, p, len);
 }
 
 int main(int argc, char** argv)
@@ -311,6 +363,12 @@ int main(int argc, char** argv)
 	fileCodePage = CP_UTF8;
 
 	atexit(exitHandler);
+
+	nlCat =  catopen("edlin", 0);
+
+	loadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), "*");
+	loadString(EDLMES_NN, messageNN, sizeof(messageNN), "Nn");
+	loadString(EDLMES_YY, messageYY, sizeof(messageYY), "Yy");
 
 	return edMainLoop(argc, argv);
 }

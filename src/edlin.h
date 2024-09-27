@@ -58,6 +58,7 @@ extern int edlinChar(unsigned short* vk, wchar_t* ch);
 extern int edlinPrint(const unsigned char*, size_t);
 extern int edlinPrintLine(const unsigned char*, size_t);
 extern int edlinPrintMessage(int message);
+extern const char *edlinGetMessage(int message);
 extern void edlinFlush(void);
 extern const char edlinControlChar[];
 

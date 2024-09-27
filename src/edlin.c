@@ -923,18 +923,15 @@ static int edlinSearchLine(size_t index, const unsigned char* p)
 
 		if (edlinOption)
 		{
-			wchar_t ch;
+			int i;
 
 			edlinPrintMessage(EDLMES_ASK);
 
-			if (!edlinConfirm("NYny", &ch))
-			{
-				return -1;
-			}
+			i = edlinConfirm();
 
-			if ('Y' != toupper(ch))
+			if (i <= 0)
 			{
-				return 0;
+				return i;
 			}
 		}
 
@@ -1387,18 +1384,13 @@ int edlinReplaceLine(size_t index, const unsigned char* matchValue, size_t match
 
 			if (edlinOption)
 			{
-				wchar_t ch;
-
 				edlinPrintMessage(EDLMES_ASK);
 
-				if (!edlinConfirm("NYny", &ch))
+				change = edlinConfirm();
+
+				if (change < 0)
 				{
 					return -1;
-				}
-
-				if ('Y' != toupper(ch))
-				{
-					change = 0;
 				}
 			}
 
@@ -1734,10 +1726,10 @@ int edMainLoop(int argc, char** argv)
 			edlinPrintError(err);
 
 			return 0;
-		}
+	}
 
 		edlinNewFile = 1;
-	}
+}
 
 	makeFileName(mainFileName, tmpFileName, sizeof(tmpFileName), ".$$$");
 
@@ -1820,7 +1812,6 @@ int edMainLoop(int argc, char** argv)
 					}
 					else
 					{
-						wchar_t ch;
 #if defined(_WIN32) && defined(_DEBUG)
 						{
 							char buf[256];
@@ -1873,11 +1864,7 @@ int edMainLoop(int argc, char** argv)
 						case 'Q':
 							edlinPrintMessage(EDLMES_QMES);
 							edlinFlush();
-							running = edlinConfirm("NYny", &ch);
-							if (running)
-							{
-								running = ('Y' != toupper(ch));
-							}
+							running = (0 == edlinConfirm());
 							break;
 
 						case 'R':

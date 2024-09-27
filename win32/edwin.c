@@ -17,6 +17,9 @@ static HMODULE hModule;
 
 static wchar_t consoleBuffer[256];
 static DWORD consoleBufferLen;
+static char messageYY[32], messageNN[32];
+static wchar_t messagePrompt[32];
+static int messagePromptLen;
 
 void edlinFlush(void)
 {
@@ -354,8 +357,6 @@ int edlinPrintLine(const unsigned char* p, size_t len)
 
 int edlinPrintMessage(int message)
 {
-	static wchar_t promptMessage[2];
-	static int promptMessageLen;
 	int len = 0;
 	const wchar_t* p = NULL;
 	wchar_t buf[64];
@@ -363,12 +364,8 @@ int edlinPrintMessage(int message)
 	switch (message)
 	{
 	case EDLMES_PROMPT:
-		if (promptMessageLen == 0)
-		{
-			promptMessageLen = LoadStringW(hModule, message, promptMessage, _countof(promptMessage));
-		}
-		p = promptMessage;
-		len = promptMessageLen;
+		p = messagePrompt;
+		len = messagePromptLen;
 		break;
 
 	default:
@@ -418,6 +415,17 @@ void edlinPrintWin32Error(DWORD err)
 		consoleBufferLen += len;
 		edlinFlush();
 	}
+}
+
+extern const char* edlinGetMessage(int message)
+{
+	switch (message)
+	{
+	case EDLMES_NN: return messageNN;
+	case EDLMES_YY: return messageYY;
+	}
+
+	return NULL;
 }
 
 int main(int argc, char** argv)
@@ -472,6 +480,10 @@ int main(int argc, char** argv)
 	}
 
 	atexit(exitHandler);
+
+	messagePromptLen = LoadStringW(hModule, EDLMES_PROMPT, messagePrompt, _countof(messagePrompt));
+	LoadStringA(hModule, EDLMES_NN, messageNN, sizeof(messageNN));
+	LoadStringA(hModule, EDLMES_YY, messageYY, sizeof(messageYY));
 
 	SetConsoleCtrlHandler(NULL, TRUE);
 

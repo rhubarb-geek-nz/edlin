@@ -54,4 +54,6 @@ BEGIN
     EDLMES_MEMFUL, "Insufficient memory\r\n"
     EDLMES_TOOLNG, "Line too long\r\n"
     EDLMES_NEWFIL, "New file\r\n"
+    EDLMES_NN, "Nn"
+    EDLMES_YY, "Yy"
 END

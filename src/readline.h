@@ -39,5 +39,5 @@ struct edlinReadline
 #define READLINE_INIT {0,8,0,0,0,0,0,NULL}
 
 extern int edlinReadLine(struct edlinReadline *line);
-extern int edlinConfirm(const char* str, wchar_t* pch);
+extern int edlinConfirm(void);
 extern void edlinPaint(struct edlinReadline* line);

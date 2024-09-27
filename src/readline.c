@@ -252,7 +252,7 @@ static void edlinBackspace(struct edlinReadline* line)
 
 			while (newColumn < line->currentColumn)
 			{
-				static unsigned char bsb[]={8,0x20,8};
+				static unsigned char bsb[] = { 8,0x20,8 };
 				edlinPrint(bsb, sizeof(bsb));
 				line->currentColumn--;
 			}
@@ -408,32 +408,38 @@ int edlinReadLine(struct edlinReadline* line)
 	return line->lineLen;
 }
 
-int edlinConfirm(const char* str, wchar_t* pch)
+int edlinConfirm(void)
 {
 	wchar_t ch;
 	unsigned short vk;
+	const char* no = edlinGetMessage(EDLMES_NN);
+	const char* yes = edlinGetMessage(EDLMES_YY);
 
 	while (edlinChar(&vk, &ch))
 	{
-		if (ch && strchr(str, ch))
+		if (ch)
 		{
-			unsigned char buf[32];
+			const char* n = strchr(no, ch);
+			const char* y = strchr(yes, ch);
+
+			if (n || y)
+			{
+				unsigned char buf[32];
 #ifdef _WIN32
-			int i = WideCharToMultiByte(fileCodePage, 0, &ch, 1, buf, sizeof(buf), NULL, NULL);
+				int i = WideCharToMultiByte(fileCodePage, 0, &ch, 1, buf, sizeof(buf), NULL, NULL);
 #else
-			int i = mbcsFromChar(fileCodePage, ch, buf);
+				int i = mbcsFromChar(fileCodePage, ch, buf);
 #endif
 
-			if (i > 0)
-			{
-				edlinPrintLine(buf, i);
+				if (i > 0)
+				{
+					edlinPrintLine(buf, i);
 
-				*pch = ch;
-
-				return TRUE;
+					return y ? 1 : 0;
+				}
 			}
 		}
 	}
 
-	return FALSE;
+	return -1;
 }

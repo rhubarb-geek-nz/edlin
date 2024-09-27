@@ -16,3 +16,5 @@
 #define EDLMES_MEMFUL 1010
 #define EDLMES_TOOLNG 1011
 #define EDLMES_NEWFIL 1012
+#define EDLMES_NN     1013
+#define EDLMES_YY     1014
