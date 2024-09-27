@@ -15,7 +15,6 @@ trap cleanup 0
 
 VERSION=$( . ./version ; echo $VERSION )
 PWD=$(pwd)
-VERSION="$MAJVERS.$MINVERS.$BLDVERS"
 PKGNAME=edlin
 
 mkdir -p data/usr/bin rpms "data/usr/share/doc/$PKGNAME" "data/usr/share/man/man1"
