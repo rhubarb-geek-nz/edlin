@@ -79,7 +79,7 @@ Use the [OpenWatcom compiler](https://github.com/open-watcom/open-watcom-1.9/rel
 
 ### Build for Windows
 
-With Visual Studio installed, run the [package.ps1](package.ps1) script.
+With Visual Studio installed, run the [package.ps1](package.ps1) script. The build system is set up to sign executables and packages.
 
 ```
 C:> PowerShell -ExecutionPolicy ByPass .\package.ps1 -CertificateThumbprint 601A8B683F791E51F647D34AD102C38DA4DDB65F -BundleThumbprint 5F88DFB53180070771D4507244B2C9C622D741F8

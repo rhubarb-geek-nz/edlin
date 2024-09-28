@@ -13,6 +13,7 @@
 
 #ifdef __OS2__
 #	define INCL_DOSNLS
+#	define INCL_DOSMISC
 #	include <os2.h>
 #endif
 
@@ -21,6 +22,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <conio.h>
+#include <signal.h>
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -29,9 +31,16 @@
 #include "readline.h"
 #include "edlmes.h"
 
+#ifdef __OS2__
+static const char *messageFile = "EDLIN.MSG";
+static char messageYY[32];
+static char messageNN[32];
+static char messagePrompt[32];
+#else
 static const char * messageYY = "Yy";
 static const char * messageNN = "Nn";
 static const char * messagePrompt = "*";
+#endif
 
 static int isTTY;
 
@@ -98,10 +107,11 @@ int edlinChar(unsigned short* vk, wchar_t* ch)
 		while (-1 != (c = getch()))
 		{
 			char buf[1];
+
 #ifdef __OS2__
-			if (isTTY && c == 0xE0)
+			if (c == 0xE0)
 #else
-			if (isTTY && c == 0)
+			if (c == 0)
 #endif
 			{
 				*ch = 0;
@@ -120,6 +130,13 @@ int edlinChar(unsigned short* vk, wchar_t* ch)
 				}
 
 				continue;
+			}
+
+			if (c == 0x80)
+			{
+				*ch = 3;
+				*vk = 0;
+				return TRUE;
 			}
 
 			buf[0] = (char)c;
@@ -212,6 +229,38 @@ const char *edlinGetMessage(int message)
 
 int edlinPrintMessage(int message)
 {
+#ifdef __OS2__
+	char buf[256];
+	const char *p = buf;
+	USHORT rc = 2;
+#	ifdef M_I386
+	ULONG len = 0;
+#	else
+	USHORT len = 0;
+#	endif
+
+	if (messageFile)
+	{
+		rc = DosGetMessage(NULL, 0, buf, sizeof(buf) - 1, message, messageFile, &len);
+
+		if (rc)
+		{
+			messageFile = NULL;
+		}
+	}
+
+	if (rc)
+	{
+		p = edlinGetMessage(message);
+
+		len = p ? strlen(p) : 0;
+	}
+
+	if (len > 0)
+	{
+		len = write(1, p, len);
+	}
+#else
 	int len = 0;
 	const char *p = edlinGetMessage(message);
 
@@ -224,9 +273,41 @@ int edlinPrintMessage(int message)
 			len = write(1, p, len);
 		}
 	}
+#endif
 
 	return len;
 }
+
+#ifdef __OS2__
+USHORT edlinLoadString(USHORT id, char *buf, size_t room, const char *str)
+{
+	USHORT rc = 2;
+	char tmp[256];
+
+	if (messageFile)
+	{
+#	ifdef M_I386
+		ULONG len = 0;
+#	else
+		USHORT len = 0;
+#	endif
+		rc = DosGetMessage(NULL, 0, tmp, sizeof(tmp), id, messageFile, &len);
+
+		if (rc)
+		{
+			messageFile = NULL;
+		}
+		else
+		{
+			str = tmp;
+		}
+	}
+
+	strncat(buf, str, room);
+
+	return rc;
+}
+#endif
 
 int main(int argc, char** argv)
 {
@@ -260,9 +341,14 @@ int main(int argc, char** argv)
 		}
 	}
 #	endif
+	edlinLoadString(EDLMES_YY, messageYY, sizeof(messageYY), "Yy");
+	edlinLoadString(EDLMES_NN, messageNN, sizeof(messageNN), "Nn");
+	edlinLoadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), "*");
 #endif
 
 	atexit(exitHandler);
+
+	signal(SIGINT,SIG_IGN);
 
 	return edMainLoop(argc, argv);
 }

@@ -13,7 +13,7 @@ config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
 
 clean:
-	rm -rf edlin *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h
+	rm -rf edlin *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat
 
 install: edlin
 	if test -n "$(INSTALL)"; \
@@ -33,3 +33,6 @@ install: edlin
 			install edlin "$(DESTDIR)/usr/bin/edlin"; \
 		fi; \
 	fi
+
+edlin.cat: edlin.msg
+	gencat edlin.cat edlin.msg

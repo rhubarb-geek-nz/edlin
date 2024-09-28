@@ -9,6 +9,7 @@ all: edlin.exe edlin.com 286\edlin.exe 386\edlin.exe
 
 clean: .SYMBOLIC
 	if exist *.err del *.err
+	if exist edlin.msg del edlin.msg
 	if exist edlin.exe del edlin.exe
 	if exist edlin.com del edlin.com
 	if exist 286\edlin.exe del 286\edlin.exe
@@ -37,4 +38,7 @@ edlin.exe: $(SRCFILES) $(HDRFILES)
 	if exist *.err exit 1
 
 286 386: .SYMBOLIC
-	mkdir $@
+	if not exist $@ mkdir $@
+
+edlin.msg: edlin.txt
+	mkmsgf edlin.txt $@
