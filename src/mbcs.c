@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include "mbcs.h"
 
+#ifdef __WATCOMC__
+#else
 static const struct
 {
 	const int codePage;
@@ -100,6 +102,7 @@ static const struct
 0x00D0,0x00D1,0x00D2,0x00D3,0x00D4,0x00D5,0x00D6,0x00D7,0x00D8,0x00D9,0x00DA,0x00DB,0x00DC,0x00DD,0x00DE,0x00DF,
 0x00E0,0x00E1,0x00E2,0x00E3,0x00E4,0x00E5,0x00E6,0x00E7,0x00E8,0x00E9,0x00EA,0x00EB,0x00EC,0x00ED,0x00EE,0x00EF,
 0x00F0,0x00F1,0x00F2,0x00F3,0x00F4,0x00F5,0x00F6,0x00F7,0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x00FF} } };
+#endif
 
 int mbcsLen(unsigned int cp, const unsigned char* p, size_t avail)
 {
@@ -166,9 +169,15 @@ wchar_t mbcsToChar(unsigned int cp, const unsigned char* p, int len)
 		if (c < 0x80) return c;
 		if (c < 0xC0) return ~0;
 		if (c < 0xE0) return ((c & 0x1f) << 6) | (p[1] & 0x3F);
+#ifdef __WATCOMC__
+		return ((c & 0xf) << 12) | ((p[1] & 0x3F) << 6) | (p[2] & 0x3F);
+#else
 		if (c < 0xF0) return ((c & 0xf) << 12) | ((p[1] & 0x3F) << 6) | (p[2] & 0x3F);
 		return ((c & 0x7) << 18) | ((p[1] & 0x3F) << 12) | ((p[2] & 0x3F) << 6) | (p[3] & 0x3F);
+#endif
 	}
+#ifdef __WATCOMC__
+#else
 	else
 	{
 		int k = sizeof(codePageList) / sizeof(codePageList[0]);
@@ -181,6 +190,7 @@ wchar_t mbcsToChar(unsigned int cp, const unsigned char* p, int len)
 			}
 		}
 	}
+#endif
 
 	return c;
 }
@@ -203,6 +213,13 @@ int mbcsFromChar(unsigned int cp, wchar_t ch, unsigned char* p)
 			return 2;
 		}
 
+#ifdef __WATCOMC__
+		p[0] = 0xE0 | (ch >> 12);
+		p[1] = 0x80 | ((ch >> 6) & 0x3F);
+		p[2] = 0x80 | (ch & 0x3F);
+
+		return 3;
+#else
 		if (ch < 0x40000)
 		{
 			p[0] = 0xE0 | (ch >> 12);
@@ -218,7 +235,10 @@ int mbcsFromChar(unsigned int cp, wchar_t ch, unsigned char* p)
 		p[3] = 0x80 | (ch & 0x3F);
 
 		return 4;
+#endif
 	}
+#ifdef __WATCOMC__
+#else
 	else
 	{
 		int k = sizeof(codePageList) / sizeof(codePageList[0]);
@@ -264,6 +284,7 @@ int mbcsFromChar(unsigned int cp, wchar_t ch, unsigned char* p)
 			ch = 0xFFFD;
 		}
 	}
+#endif
 
 	p[0] = (ch == 0xFFFD) ? '?' : (char)ch;
 
