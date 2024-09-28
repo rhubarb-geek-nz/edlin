@@ -3,17 +3,21 @@
  * Licensed under the MIT License.
  */
 
+#ifdef HAVE_CONFIG_H
+#	include <config.h>
+#endif
+
 #ifdef _WIN32
 #	include <windows.h>
-#else
-#	include <unistd.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+#	include <unistd.h>
+#endif
 #include "edlin.h"
 #include "edlmes.h"
 #include "readline.h"

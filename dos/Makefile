@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Roger Brown.
 # Licensed under the MIT License.
 
-CFLAGS=-I..\src -d0
+CFLAGS=-I..\src -d0 -DHAVE_UNISTD_H -DWIN32_LEAN_AND_MEAN
 SRCFILES=..\src\edlin.c ..\src\readline.c ..\src\mbcs.c eddos.c
 HDRFILES=..\src\edlin.h ..\src\readline.h ..\src\mbcs.h
 

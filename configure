@@ -44,3 +44,12 @@ if $CC $CFLAGS a.c
 then
 	echo "#define HAVE_NL_TYPES_H 1" >> config.h
 fi
+
+cat > a.c << EOF
+#include <unistd.h>
+int main(int argc,char **argv) { unlink("edlin"); return 0; }
+EOF
+if $CC $CFLAGS a.c
+then
+	echo "#define HAVE_UNISTD_H 1" >> config.h
+fi
