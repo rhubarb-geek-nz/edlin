@@ -13,6 +13,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#include <unistd.h>
 #include "edlin.h"
 #include "edlmes.h"
 #include "readline.h"
@@ -61,7 +62,7 @@ void edExit(void)
 
 	if (tmpFileName[0])
 	{
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__WATCOMC__)
 		_unlink(tmpFileName);
 #else
 		unlink(tmpFileName);
@@ -593,7 +594,7 @@ int edlinIndexFromArg(long arg, size_t* s)
 int edlinPrintLinePrompt(size_t index)
 {
 	unsigned char buf[11];
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__WATCOMC__)
 	int i = sprintf_s(buf, sizeof(buf), "%ld:%c", (long)(index + 1), currentLine == index ? '*' : ' ');
 #else
 	int i = snprintf((char*)buf, sizeof(buf), "%ld:%c", (long)(index + 1), currentLine == index ? '*' : ' ');
@@ -1276,7 +1277,7 @@ void edlinMerge(void)
 	memcpy(name, edlinArgValue, edlinArgLength);
 	name[edlinArgLength] = 0;
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__WATCOMC__)
 	err = fopen_s(&fp, name, "r");
 #else
 	fp = fopen(name, "r");
@@ -1647,8 +1648,12 @@ int edlinExit(void)
 			return -1;
 		}
 
-#ifdef _WIN32
+#if defined(__OS2__) || defined(__DOS__) || defined(_WIN32)
+#	ifdef __WATCOMC__
+		unlink(fileName);
+#	else
 		_unlink(fileName);
+#	endif
 #endif
 
 		if (rename(mainFileName, fileName))
@@ -1712,7 +1717,7 @@ int edMainLoop(int argc, char** argv)
 		return 0;
 	}
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__WATCOMC__)
 	err = fopen_s(&fileMainRead, mainFileName, "r");
 #else
 	fileMainRead = fopen(mainFileName, "r");
@@ -1733,7 +1738,7 @@ int edMainLoop(int argc, char** argv)
 
 	makeFileName(mainFileName, tmpFileName, sizeof(tmpFileName), ".$$$");
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__WATCOMC__)
 	err = fopen_s(&fileTmpWrite, tmpFileName, "w");
 #else
 	fileTmpWrite = fopen(tmpFileName, "w");
@@ -1747,7 +1752,11 @@ int edMainLoop(int argc, char** argv)
 		return 0;
 	}
 
+#ifdef EDLIN_MALLOC
+	contentLength = EDLIN_MALLOC;
+#else
 	contentLength = 0x100000;
+#endif
 
 	contentStore = malloc(contentLength);
 

@@ -12,7 +12,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <termios.h>
-#include <nl_types.h>
+#ifdef HAVE_NL_TYPES_H
+#	include <nl_types.h>
+#endif
 #include "edlin.h"
 #include "mbcs.h"
 #include "readline.h"
@@ -20,7 +22,9 @@
 
 static struct termios ttyAttr;
 static int restoreAttr;
+#ifdef HAVE_NL_TYPES_H
 static nl_catd nlCat=(nl_catd)-1;
+#endif
 static char messageYY[32], messageNN[32], messagePrompt[32];
 
 #if !defined(HAVE_CFMAKERAW)
@@ -238,11 +242,13 @@ static void exitHandler(void)
 		tcsetattr(0,TCSADRAIN,&ttyAttr);
 	}
 
+#ifdef HAVE_NL_TYPES_H
 	if (nlCat != (nl_catd)-1)
 	{
 		catclose(nlCat);
 		nlCat = (nl_catd)-1;
 	}
+#endif
 }
 
 int edlinPrint(const unsigned char* p, size_t len)
@@ -298,10 +304,12 @@ const char *edlinGetMessage(int message)
 				{
 					const char *p = edlmes[count].text;
 
+#ifdef HAVE_NL_TYPES_H
 					if (nlCat != (nl_catd)-1)
 					{
 						p = catgets(nlCat, 1, message, p);
 					}
+#endif
 
 					return p;
 				}
@@ -332,10 +340,12 @@ int edlinPrintMessage(int message)
 
 static void loadString(int message, char *str, size_t len, const char *p)
 {
+#ifdef HAVE_NL_TYPES_H
 	if (nlCat != (nl_catd)-1)
 	{
 		p = catgets(nlCat, 1, message, p);
 	}
+#endif
 
 	strncat(str, p, len);
 }
@@ -364,7 +374,9 @@ int main(int argc, char** argv)
 
 	atexit(exitHandler);
 
-	nlCat =  catopen("edlin", 0);
+#ifdef HAVE_NL_TYPES_H
+	nlCat = catopen("edlin", 0);
+#endif
 
 	loadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), "*");
 	loadString(EDLMES_NN, messageNN, sizeof(messageNN), "Nn");

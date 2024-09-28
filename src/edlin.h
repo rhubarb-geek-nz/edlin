@@ -4,6 +4,12 @@
  */
 
 #ifdef _WIN32
+#	ifdef __WATCOMC__
+#		define _countof(x)     	(sizeof(x)/sizeof(x[0]))
+#		define strcat_s(a,b,c)	strncat(a,c,b)
+#		define strcpy_s(a,b,c)	strncpy(a,c,b)
+typedef int errno_t;
+#	endif
 #else
 #	define MAX_PATH	260
 #	define FALSE 0

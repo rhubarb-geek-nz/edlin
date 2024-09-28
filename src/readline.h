@@ -25,6 +25,7 @@
 #	define VK_F10		1018
 #	define VK_UP		1019
 #	define VK_END		1020
+#	define VK_DOWN		1021
 #endif
 
 struct edlinReadline

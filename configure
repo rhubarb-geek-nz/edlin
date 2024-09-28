@@ -35,3 +35,12 @@ if $CC $CFLAGS a.c
 then
 	echo "#define HAVE_CFMAKERAW 1" >> config.h
 fi
+
+cat > a.c << EOF
+#include <nl_types.h>
+int main(int argc,char **argv) { catopen("edlin",0); return 0; }
+EOF
+if $CC $CFLAGS a.c
+then
+	echo "#define HAVE_NL_TYPES_H 1" >> config.h
+fi

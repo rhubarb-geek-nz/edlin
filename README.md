@@ -40,3 +40,4 @@ The commands are as per the original MS-DOS program and manuals.
 - File data is in the current ANSI code page
 - Uses VT-100 escape sequences to handle control keys from console
 - Unrelated to the FreeDOS implementation
+- Compiles and runs on DOS, OS/2, Windows, Linux, macOS, OpenBSD, FreeBSD, NetBSD, QNX and Solaris.
