@@ -12,7 +12,7 @@ Usage - `edlin` _filename_ \[/B\]
 
 ## Mission Statement
 
-Provide a working equivalent `edlin` for modern operating systems. The goal is not to enhance or extend it's behaviour, however it should be a good citizen on the hosted operating system. It should work correctly with just a terminal and on a minimal system.
+Provide a working equivalent `edlin` for modern operating systems. The goal is not to enhance or extend it's behaviour, however it should be a good citizen on the host operating system. It should work correctly with just a terminal and on a minimal system.
 
 ## Commands
 
@@ -46,7 +46,6 @@ The commands are as per the original MS-DOS program and manuals.
 - Compiles and runs on DOS, OS/2, Windows, Linux, macOS, OpenBSD, FreeBSD, NetBSD, QNX, Haiku and Solaris.
 - Uses UTF-8 data on Win32 and POSIX systems. On DOS it defaults to codepage 437 and on OS/2 it uses the default configured codepage, typically 850.
 - NLS support is minimal, the original used hardcoded strings. This version supports string tables on Windows and message catalogs on POSIX systems. The OS/2 version uses message files.
-
 - Content is held internally in a single block of memory allocated once at startup.
 - Unrelated to the FreeDOS implementation
 
@@ -85,3 +84,7 @@ With Visual Studio installed, run the [package.ps1](package.ps1) script. The bui
 ```
 C:> PowerShell -ExecutionPolicy ByPass .\package.ps1 -CertificateThumbprint 601A8B683F791E51F647D34AD102C38DA4DDB65F -BundleThumbprint 5F88DFB53180070771D4507244B2C9C622D741F8
 ```
+
+### Build for macOS
+
+Use the [package.ps1](package.ps1) script. The build system is set up to sign executables and packages. This will perform two builds, as x86_64 and arm64, and sign them independently before merging with lipo and packaging.
