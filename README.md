@@ -45,7 +45,8 @@ The commands are as per the original MS-DOS program and manuals.
 - Uses VT-100 escape sequences to handle control keys from console
 - Compiles and runs on DOS, OS/2, Windows, Linux, macOS, OpenBSD, FreeBSD, NetBSD, QNX, Haiku and Solaris.
 - Uses UTF-8 data on Win32 and POSIX systems. On DOS it defaults to codepage 437 and on OS/2 it uses the default configured codepage, typically 850.
-- NLS support is minimal, the original used hardcoded strings. This version supports string tables on Windows and message catalogs on POSIX systems.
+- NLS support is minimal, the original used hardcoded strings. This version supports string tables on Windows and message catalogs on POSIX systems. The OS/2 version uses message files.
+
 - Content is held internally in a single block of memory allocated once at startup.
 - Unrelated to the FreeDOS implementation
 
