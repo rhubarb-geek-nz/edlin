@@ -1547,7 +1547,7 @@ const char* makeFileName(const char* original, char* name, size_t nameLen, const
 			return name;
 		}
 
-#ifdef _WIN32
+#if defined(__OS2__) || defined(__DOS__) || defined(_WIN32) || defined(__WATCOMC__)
 		if (c == '/' || c == '\\' || c == ':')
 #else
 		if (c == '/')
@@ -1700,7 +1700,7 @@ int edMainLoop(int argc, char** argv)
 	{
 		const char* p = *++argv;
 
-#ifdef _WIN32
+#if defined(__OS2__) || defined(__DOS__) || defined(_WIN32) || defined(__WATCOMC__)
 		if (_stricmp(p, "/B"))
 #endif
 		{
