@@ -14,6 +14,7 @@ static HANDLE hStdIn = INVALID_HANDLE_VALUE, hStdOut = INVALID_HANDLE_VALUE;
 static DWORD dwStdInOriginalConsoleMode, dwStdOutConsoleMode, dwStdInConsoleMode;
 static BOOL bStdInConsoleModeSet, bStdInConsole, bStdOutConsole;
 static HMODULE hModule;
+static BOOL bFreeLibrary;
 
 static wchar_t consoleBuffer[256];
 static DWORD consoleBufferLen;
@@ -291,6 +292,10 @@ static void exitHandler(void)
 		SetConsoleMode(hStdIn, dwStdInOriginalConsoleMode);
 	}
 	edlinFlush();
+	if (bFreeLibrary)
+	{
+		FreeLibrary(hModule);
+	}
 }
 
 int edlinPrint(const unsigned char* p, size_t len)
@@ -430,7 +435,17 @@ extern const char* edlinGetMessage(int message)
 
 int main(int argc, char** argv)
 {
-	hModule = GetModuleHandleW(NULL);
+	hModule = LoadLibraryExW(L"EDLMES.DLL", NULL, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
+
+	if (hModule)
+	{
+		bFreeLibrary = TRUE;
+	}
+	else
+	{
+		hModule = GetModuleHandleW(NULL);
+	}
+
 	fileCodePage = GetACP();
 	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	hStdIn = GetStdHandle(STD_INPUT_HANDLE);

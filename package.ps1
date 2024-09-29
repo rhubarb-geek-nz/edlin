@@ -270,9 +270,9 @@ EXIT %ERRORLEVEL%
 			$ARCHLIST | ForEach-Object {
 				$ARCH = $_
 				$VCVARS = ( '{0}\{1}' -f $VCVARSDIR, $VCVARSARCH[$ARCH] )
-				$EXE = "$ARCH\edlin.exe"
-
-				$MACHINE = ( @"
+				foreach ($EXE in "$ARCH\edlin.exe", "$ARCH\edlmes.dll")
+				{
+					$MACHINE = ( @"
 @CALL "$VCVARS" > NUL:
 IF ERRORLEVEL 1 EXIT %ERRORLEVEL%
 dumpbin /headers $EXE
@@ -280,17 +280,18 @@ IF ERRORLEVEL 1 EXIT %ERRORLEVEL%
 EXIT %ERRORLEVEL%
 "@ | & "$env:COMSPEC" /nologo /Q | Select-String -Pattern " machine " )
 
-				$MACHINE = $MACHINE.ToString().Trim()
+					$MACHINE = $MACHINE.ToString().Trim()
 
-				$MACHINE = $MACHINE.Substring($MACHINE.LastIndexOf(' ')+1)
+					$MACHINE = $MACHINE.Substring($MACHINE.LastIndexOf(' ')+1)
 
-				New-Object PSObject -Property @{
-					Architecture=$ARCH;
-					Executable=$EXE;
-					Machine=$MACHINE;
-					FileVersion=(Get-Item $EXE).VersionInfo.FileVersion;
-					ProductVersion=(Get-Item $EXE).VersionInfo.ProductVersion;
-					FileDescription=(Get-Item $EXE).VersionInfo.FileDescription
+					New-Object PSObject -Property @{
+						Architecture=$ARCH;
+						Executable=$EXE;
+						Machine=$MACHINE;
+						FileVersion=(Get-Item $EXE).VersionInfo.FileVersion;
+						ProductVersion=(Get-Item $EXE).VersionInfo.ProductVersion;
+						FileDescription=(Get-Item $EXE).VersionInfo.FileDescription
+					}
 				}
 			} | Format-Table -Property Architecture, Executable, Machine, FileVersion, ProductVersion, FileDescription
 		}

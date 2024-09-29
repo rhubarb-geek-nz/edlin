@@ -305,6 +305,9 @@
   <ItemGroup>
     <ResourceCompile Include="edlin.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="edlin.def" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

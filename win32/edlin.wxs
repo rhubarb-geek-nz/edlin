@@ -41,6 +41,9 @@
       <Component Id="edlin.chm" Guid="*" Directory="INSTALLDIR" Win64="$(env.PRODUCTWIN64)">
         <File Id="edlin.chm" KeyPath="yes" Source="htmlhelp\edlin.chm" />
       </Component>
+      <Component Id="edlmes.dll" Guid="*" Directory="INSTALLDIR" Win64="$(env.PRODUCTWIN64)">
+        <File Id="edlmes.dll" KeyPath="yes" Source="bin\$(env.PRODUCTARCH)\edlmes.dll" />
+      </Component>
     </ComponentGroup>
   </Fragment>
 </Wix>
