@@ -203,6 +203,37 @@ if ($IsWindows -or ( 'Desktop' -eq $PSEdition ))
 
 			$xmlDoc.Save("$Win32Dir\AppxManifest.xml")
 
+			$env:PRODUCTVERSION = $VersionStr4
+			$env:PRODUCTARCH = $ARCH
+			$env:PRODUCTWIN64 = 'yes'
+			$env:PRODUCTPROGFILES = 'ProgramFiles64Folder'
+			$env:INSTALLERVERSION = '500'
+
+			switch ($ARCH)
+			{
+				'arm64' {
+					$env:UPGRADECODE = '218D799F-DCCF-4738-9F16-6881EBDCB9D8'
+				}
+
+				'arm' {
+					$env:UPGRADECODE = '5CA33CBB-A624-4BE3-9545-4B74295C26DC'
+					$env:PRODUCTWIN64 = 'no'
+					$env:PRODUCTPROGFILES = 'ProgramFilesFolder'
+				}
+
+				'x86' {
+					$env:UPGRADECODE = 'A62112C4-69F3-460F-BDC2-ECFD2C941D2A'
+					$env:PRODUCTWIN64 = 'no'
+					$env:PRODUCTPROGFILES = 'ProgramFilesFolder'
+					$env:INSTALLERVERSION = '200'
+				}
+
+				'x64' {
+					$env:UPGRADECODE = '47A4431E-6C97-493B-8D20-7C9594A33A7D'
+					$env:INSTALLERVERSION = '200'
+				}
+			}
+
 			@"
 CALL "$VCVARS"
 IF ERRORLEVEL 1 EXIT %ERRORLEVEL%

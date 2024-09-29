@@ -12,11 +12,13 @@ APP=$(BINDIR)\$(APPNAME).exe
 MSI=$(APPNAME)-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).msi
 MSIX=$(BUNDLE)\$(APPNAME)-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).msix
 MSIXBUNDLE=$(APPNAME)-$(DEPVERS_edlin_STR4).msixbundle
+CHM=htmlhelp\$(APPNAME).chm
 
 all: $(APP) $(MSI) $(MSIX)
 	
 clean: 
 	if exist $(APP) del $(APP)
+	if exist $(CHM) del $(CHM)
 	if exist $(OBJDIR)\*.obj del $(OBJDIR)\*.obj
 	if exist $(OBJDIR) rmdir $(OBJDIR)
 	if exist $(BINDIR) rmdir $(BINDIR)
@@ -54,9 +56,9 @@ $(OBJDIR) $(BINDIR) $(BUNDLE):
 	mkdir $@
 
 $(MSI): $(APP) $(CHM)
-	"$(WIX)bin\candle.exe" -nologo "wix\$(VSCMD_ARG_TGT_ARCH).wxs" -dDEPVERS_edlin_STR4=$(DEPVERS_edlin_STR4)
-	"$(WIX)bin\light.exe" -nologo -cultures:null -out $@ "$(VSCMD_ARG_TGT_ARCH).wixobj"
-	del "$(VSCMD_ARG_TGT_ARCH).wixobj"
+	"$(WIX)bin\candle.exe" -nologo "edlin.wxs" -dDEPVERS_edlin_STR4=$(DEPVERS_edlin_STR4)
+	"$(WIX)bin\light.exe" -nologo -cultures:null -out $@ "edlin.wixobj"
+	del "edlin.wixobj"
 	del "$(APPNAME)-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).wixpdb"
 	signtool sign /sha1 "$(CertificateThumbprint)" /fd SHA256 /t http://timestamp.digicert.com $@
 
@@ -70,3 +72,9 @@ $(MSIX): $(BUNDLE) $(APP)
 $(MSIXBUNDLE):
 	makeappx bundle /d $(BUNDLE) /p $@
 	signtool sign /sha1 "$(BundleThumbprint)" /fd SHA256 /t http://timestamp.digicert.com $@
+
+$(CHM): htmlhelp\$(APPNAME).hhp
+	cd htmlhelp
+	-"$(COMSPEC)" /C "%%ProgramFiles(x86)%%\\HTML Help Workshop\hhc.exe" $(APPNAME).hhp
+	cd ..
+	dir $@
