@@ -3,8 +3,8 @@
 
 APPNAME=edlin
 DLLNAME=edlmes
+LINKVERSION=0.9
 SRC=..\src\$(APPNAME).c ..\src\readline.c ..\src\mbcs.c edwin.c
-DLLSRC=..\edlmes\edlmes.c
 CL=cl
 OBJDIR=obj\$(VSCMD_ARG_TGT_ARCH)
 BINDIR=bin\$(VSCMD_ARG_TGT_ARCH)
@@ -45,7 +45,7 @@ $(APP): $(SRC) $(OBJDIR) $(BINDIR) $(RESFILE)
 		/PDB:NONE					\
 		/SUBSYSTEM:CONSOLE			\
 		user32.lib					\
-		/DEF:$(APPNAME).def			\
+		/VERSION:$(LINKVERSION)		\
 		$(RESFILE)					\
 		/MANIFEST
 	mt -manifest $(APPNAME).manifest $@.manifest -outputresource:$@;#1
@@ -54,25 +54,16 @@ $(APP): $(SRC) $(OBJDIR) $(BINDIR) $(RESFILE)
 	del "$(BINDIR)\$(APPNAME).lib"
 	signtool sign /sha1 "$(CertificateThumbprint)" /fd SHA256 /t http://timestamp.digicert.com $@
 
-$(DLL): $(OBJDIR) $(BINDIR) $(DLLRES)
-	$(CL) 							\
-		/LD							\
-		/Fe$@ 						\
-		/Fo$(OBJDIR)\				\
-		/MT							\
-		/W3 						\
-		/WX 						\
-		/I.							\
-		/I..\src					\
-		/DNDEBUG 					\
-		/DWIN32_LEAN_AND_MEAN		\
-		$(DLLSRC) 					\
-		/link						\
-		/INCREMENTAL:NO				\
-		/PDB:NONE					\
-		/SUBSYSTEM:CONSOLE			\
-		/NOENTRY					\
-		/DEF:..\$(DLLNAME)\$(DLLNAME).def \
+$(DLL): $(BINDIR) $(DLLRES)
+	link									\
+		/DLL								\
+		/OUT:$@								\
+		/INCREMENTAL:NO						\
+		/PDB:NONE							\
+		/SUBSYSTEM:CONSOLE					\
+		/MACHINE:$(VSCMD_ARG_TGT_ARCH) 		\
+		/NOENTRY							\
+		/VERSION:$(LINKVERSION)				\
 		$(DLLRES)
 	del "$(BINDIR)\$(DLLNAME).exp"
 	del "$(BINDIR)\$(DLLNAME).lib"
@@ -81,8 +72,8 @@ $(DLL): $(OBJDIR) $(BINDIR) $(DLLRES)
 $(RESFILE): $(APPNAME).rc
 	rc /r /I..\src $(RCFLAGS) "/DDEPVERS_edlin_INT4=$(DEPVERS_edlin_INT4)" "/DDEPVERS_edlin_STR4=\"$(DEPVERS_edlin_STR4)\"" /fo$@ $(APPNAME).rc
 
-$(DLLRES): ..\$(DLLNAME)\$(DLLNAME).rc
-	rc /r /I..\src $(RCFLAGS) "/DDEPVERS_edlin_INT4=$(DEPVERS_edlin_INT4)" "/DDEPVERS_edlin_STR4=\"$(DEPVERS_edlin_STR4)\"" /fo$@ ..\$(DLLNAME)\$(DLLNAME).rc
+$(DLLRES): $(DLLNAME).rc
+	rc /r /I..\src $(RCFLAGS) "/DDEPVERS_edlin_INT4=$(DEPVERS_edlin_INT4)" "/DDEPVERS_edlin_STR4=\"$(DEPVERS_edlin_STR4)\"" /fo$@ $(DLLNAME).rc
 
 $(OBJDIR) $(BINDIR) $(BUNDLE):
 	mkdir $@
