@@ -3,19 +3,21 @@
 
 all: dist
 
-dist: edlin
+APPNAME=edlin
+
+dist: $(APPNAME)
 	pkg/$$(uname)
 
-edlin: src/edlin.c src/mbcs.c src/readline.c src/edposix.c config.h
-	$(CC) $(CFLAGS) -I. -DHAVE_CONFIG_H src/edlin.c src/mbcs.c src/readline.c src/edposix.c -o $@
+$(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c src/edposix.c config.h
+	$(CC) $(CFLAGS) -I. -DHAVE_CONFIG_H src/$(APPNAME).c src/mbcs.c src/readline.c src/edposix.c -o $@
 
 config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
 
 clean:
-	rm -rf edlin *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat
+	rm -rf $(APPNAME) *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat
 
-install: edlin
+install: $(APPNAME)
 	if test -n "$(INSTALL)"; \
 	then \
 		$(INSTALL) -d "$(DESTDIR)/usr/bin"; \
@@ -24,15 +26,15 @@ install: edlin
 	fi
 	if test -n "$(INSTALL_PROGRAM)"; \
 	then \
-		$(INSTALL_PROGRAM) edlin "$(DESTDIR)/usr/bin/edlin"; \
+		$(INSTALL_PROGRAM) $(APPNAME) "$(DESTDIR)/usr/bin/$(APPNAME)"; \
 	else \
 		if test -n "$(INSTALL)"; \
 		then \
-			$(INSTALL) edlin "$(DESTDIR)/usr/bin/edlin"; \
+			$(INSTALL) $(APPNAME) "$(DESTDIR)/usr/bin/$(APPNAME)"; \
 		else \
-			install edlin "$(DESTDIR)/usr/bin/edlin"; \
+			install $(APPNAME) "$(DESTDIR)/usr/bin/$(APPNAME)"; \
 		fi; \
 	fi
 
-edlin.cat: edlin.msg
-	gencat edlin.cat edlin.msg
+$(APPNAME).cat: src/$(APPNAME).msg
+	gencat $@ src/$(APPNAME).msg
