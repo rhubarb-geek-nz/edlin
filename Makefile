@@ -8,8 +8,8 @@ APPNAME=edlin
 dist: $(APPNAME)
 	pkg/$$(uname)
 
-$(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c src/edposix.c config.h
-	$(CC) $(CFLAGS) -I. -DHAVE_CONFIG_H src/$(APPNAME).c src/mbcs.c src/readline.c src/edposix.c -o $@
+$(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c config.h
+	$(CC) $(CFLAGS) -I. -Isrc -DHAVE_CONFIG_H src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c -o $@
 
 config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
@@ -36,5 +36,5 @@ install: $(APPNAME)
 		fi; \
 	fi
 
-$(APPNAME).cat: src/$(APPNAME).msg
-	gencat $@ src/$(APPNAME).msg
+$(APPNAME).cat: posix/$(APPNAME).msg
+	gencat $@ posix/$(APPNAME).msg
