@@ -189,6 +189,7 @@ if ($IsWindows -or ( 'Desktop' -eq $PSEdition ))
 
 			$VersionStr4="$Version.0"
 			$VersionInt4=$VersionStr4.Replace(".",",")
+			$VersionParts=$Version.Split('.')
 
 			$xmlDoc = [System.Xml.XmlDocument](Get-Content "Package.appxmanifest")
 
@@ -207,7 +208,9 @@ if ($IsWindows -or ( 'Desktop' -eq $PSEdition ))
 			$env:PRODUCTARCH = $ARCH
 			$env:PRODUCTWIN64 = 'yes'
 			$env:PRODUCTPROGFILES = 'ProgramFiles64Folder'
+			$env:PRODUCTSYSFILES = 'System64Folder'
 			$env:INSTALLERVERSION = '500'
+			$env:LINKVERSION = $VersionParts[0]+'.'+$VersionParts[1]
 
 			switch ($ARCH)
 			{
@@ -219,12 +222,14 @@ if ($IsWindows -or ( 'Desktop' -eq $PSEdition ))
 					$env:UPGRADECODE = '5CA33CBB-A624-4BE3-9545-4B74295C26DC'
 					$env:PRODUCTWIN64 = 'no'
 					$env:PRODUCTPROGFILES = 'ProgramFilesFolder'
+					$env:PRODUCTSYSFILES = 'SystemFolder'
 				}
 
 				'x86' {
 					$env:UPGRADECODE = 'A62112C4-69F3-460F-BDC2-ECFD2C941D2A'
 					$env:PRODUCTWIN64 = 'no'
 					$env:PRODUCTPROGFILES = 'ProgramFilesFolder'
+					$env:PRODUCTSYSFILES = 'SystemFolder'
 					$env:INSTALLERVERSION = '200'
 				}
 
@@ -270,7 +275,7 @@ EXIT %ERRORLEVEL%
 			$ARCHLIST | ForEach-Object {
 				$ARCH = $_
 				$VCVARS = ( '{0}\{1}' -f $VCVARSDIR, $VCVARSARCH[$ARCH] )
-				foreach ($EXE in "$ARCH\edlin.exe", "$ARCH\edlmes.dll")
+				foreach ($EXE in "$ARCH\edlin.exe")
 				{
 					$MACHINE = ( @"
 @CALL "$VCVARS" > NUL:

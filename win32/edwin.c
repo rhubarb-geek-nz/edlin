@@ -14,13 +14,72 @@ static HANDLE hStdIn = INVALID_HANDLE_VALUE, hStdOut = INVALID_HANDLE_VALUE;
 static DWORD dwStdInOriginalConsoleMode, dwStdOutConsoleMode, dwStdInConsoleMode;
 static BOOL bStdInConsoleModeSet, bStdInConsole, bStdOutConsole;
 static HMODULE hModule;
-static BOOL bFreeLibrary;
 
 static wchar_t consoleBuffer[256];
 static DWORD consoleBufferLen;
 static char messageYY[32], messageNN[32];
 static wchar_t messagePrompt[32];
 static int messagePromptLen;
+static WORD stringLang;
+
+static UINT LoadStringForLangW(HMODULE hInstance, UINT id, WORD lang, wchar_t* buf, UINT len)
+{
+	HRSRC hResInfo = FindResourceExW(hInstance, RT_STRING, MAKEINTRESOURCE(1+(id >> 4)), lang);
+	UINT rc = 0;
+
+	if (hResInfo)
+	{
+		int dwSize = SizeofResource(hInstance, hResInfo);
+		HGLOBAL hGlobal = LoadResource(hInstance, hResInfo);
+
+		if (hGlobal)
+		{
+			wchar_t* p = LockResource(hGlobal);
+			
+			id &= 0xF;
+
+			while (dwSize > 0)
+			{
+				wchar_t slen = *p++;
+
+				if (!id--)
+				{
+					rc = slen;
+
+					if (rc >= len) rc = len - 1;
+
+					memcpy(buf, p, (rc << 1));
+					buf[rc] = 0;
+
+					break;
+				}
+
+				p += slen;
+
+				dwSize -= (1 + slen) << 1;
+			}
+
+			FreeResource(hGlobal);
+		}
+	}
+
+	return rc;
+}
+
+static UINT LoadStringForLangA(HMODULE hInstance, UINT id, WORD lang, char* buf, UINT len)
+{
+	wchar_t tmp[256];
+	UINT i = LoadStringForLangW(hInstance, id, lang, tmp, sizeof(tmp));
+	if (i)
+	{
+		i = WideCharToMultiByte(CP_ACP, 0, tmp, i, buf, len-1, NULL, NULL);
+		if (i < len)
+		{
+			buf[i] = 0;
+		}
+	}
+	return i;
+}
 
 void edlinFlush(void)
 {
@@ -292,10 +351,6 @@ static void exitHandler(void)
 		SetConsoleMode(hStdIn, dwStdInOriginalConsoleMode);
 	}
 	edlinFlush();
-	if (bFreeLibrary)
-	{
-		FreeLibrary(hModule);
-	}
 }
 
 int edlinPrint(const unsigned char* p, size_t len)
@@ -374,7 +429,7 @@ int edlinPrintMessage(int message)
 		break;
 
 	default:
-		len = LoadStringW(hModule, message, buf, _countof(buf));
+		len = LoadStringForLangW(hModule, message, stringLang, buf, _countof(buf));
 		if (len > 0)
 		{
 			p = buf;
@@ -433,18 +488,19 @@ extern const char* edlinGetMessage(int message)
 	return NULL;
 }
 
+static BOOL containsLang(const WORD* p, int len, WORD lang)
+{
+	while (len--)
+	{
+		if (lang == *p++) return TRUE;
+	}
+
+	return FALSE;
+}
+
 int main(int argc, char** argv)
 {
-	hModule = LoadLibraryExW(L"EDLMES.DLL", NULL, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
-
-	if (hModule)
-	{
-		bFreeLibrary = TRUE;
-	}
-	else
-	{
-		hModule = GetModuleHandleW(NULL);
-	}
+	hModule = GetModuleHandleW(NULL);
 
 	fileCodePage = GetACP();
 	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -496,9 +552,43 @@ int main(int argc, char** argv)
 
 	atexit(exitHandler);
 
-	messagePromptLen = LoadStringW(hModule, EDLMES_PROMPT, messagePrompt, _countof(messagePrompt));
-	LoadStringA(hModule, EDLMES_NN, messageNN, sizeof(messageNN));
-	LoadStringA(hModule, EDLMES_YY, messageYY, sizeof(messageYY));
+	{
+		WORD langList[4];
+		int i = 0, j=0;
+		WORD w;
+
+		langList[i++] = LANGIDFROMLCID(GetThreadLocale());
+
+		w = GetUserDefaultLangID();
+
+		if (!containsLang(langList, i, w)) langList[i++] = w;
+
+		w = GetSystemDefaultLangID();
+
+		if (!containsLang(langList, i, w)) langList[i++] = w;
+
+		w = MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL);
+
+		if (!containsLang(langList, i, w)) langList[i++] = w;
+
+		while (j < i)
+		{
+			stringLang = langList[j++];
+
+			messagePromptLen = LoadStringForLangW(hModule, EDLMES_PROMPT, stringLang, messagePrompt, _countof(messagePrompt));
+
+			if (messagePromptLen) break;
+		}
+
+		if (!messagePromptLen)
+		{
+			edlinPrintWin32Error(GetLastError());
+			return 1;
+		}
+	}
+
+	LoadStringForLangA(hModule, EDLMES_NN, stringLang, messageNN, sizeof(messageNN));
+	LoadStringForLangA(hModule, EDLMES_YY, stringLang, messageYY, sizeof(messageYY));
 
 	SetConsoleCtrlHandler(NULL, TRUE);
 

@@ -1266,6 +1266,8 @@ void edlinMerge(void)
 	errno_t err;
 	size_t index = currentLine;
 	char name[256];
+	unsigned char* store;
+	size_t contentNew = 0, contentNewCount = 0;
 
 	if ((edlinArgCount > 1) || !edlinArgLength)
 	{
@@ -1298,32 +1300,40 @@ void edlinMerge(void)
 
 	currentLine = index;
 
+	store = contentStore + contentLow;
+
 	while (TRUE)
 	{
-		size_t room = contentLength - contentLow - contentHigh;
-		unsigned char* store;
+		size_t room = contentLength - contentLow - contentHigh - contentNew;
 		int i;
 
 		if (room < 256)
 		{
 			edlinPrintMessage(EDLMES_MRGERR);
+			store = NULL;
 			break;
 		}
-
-		store = contentStore + contentLow;
 
 		i = edlinFileRead(store, fp);
 
 		if (i > 0)
 		{
-			contentLow += 1 + store[0];
-			contentLowCount++;
+			size_t len = 1 + store[0];
+			contentNew += len;
+			contentNewCount++;
+			store += len;
 		}
 
 		if (i < 2)
 		{
 			break;
 		}
+	}
+
+	if (store)
+	{
+		contentLow += contentNew;
+		contentLowCount += contentNewCount;
 	}
 
 	fclose(fp);
@@ -1547,7 +1557,7 @@ const char* makeFileName(const char* original, char* name, size_t nameLen, const
 			return name;
 		}
 
-#if defined(__OS2__) || defined(__DOS__) || defined(_WIN32) || defined(__WATCOMC__)
+#ifdef EDLIN_DOSFILESYSTEM
 		if (c == '/' || c == '\\' || c == ':')
 #else
 		if (c == '/')
@@ -1652,7 +1662,7 @@ int edlinExit(void)
 			return -1;
 		}
 
-#if defined(__OS2__) || defined(__DOS__) || defined(_WIN32)
+#ifdef EDLIN_DOSFILESYSTEM
 #	ifdef __WATCOMC__
 		unlink(fileName);
 #	else
@@ -1700,7 +1710,7 @@ int edMainLoop(int argc, char** argv)
 	{
 		const char* p = *++argv;
 
-#if defined(__OS2__) || defined(__DOS__) || defined(_WIN32) || defined(__WATCOMC__)
+#ifdef EDLIN_DOSFILESYSTEM
 		if (_stricmp(p, "/B"))
 #endif
 		{
@@ -1900,7 +1910,7 @@ int edMainLoop(int argc, char** argv)
 							edlinWrite();
 							break;
 
-#ifdef _DEBUG
+#if defined(_WIN32) && defined(_DEBUG)
 						case 'Z':
 							if (edlinCommand)
 							{

@@ -11,21 +11,11 @@
     </Upgrade>
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize" />
-      <WriteEnvironmentStrings/>
     </InstallExecuteSequence>
-    <DirectoryRef Id="INSTALLDIR">
-      <Component Id ="setEnviroment" Guid="{79F11305-34D0-495D-8FA6-38B2ACDEE3A2}" Win64="$(env.PRODUCTWIN64)">
-        <CreateFolder />
-        <Environment Id="PATH" Action="set" Name="PATH" Part="last" Permanent="no" System="yes" Value="[INSTALLDIR]" />
-      </Component>
-    </DirectoryRef>
-    <Feature Id="PathFeature" Title="PATH" Level="1" Absent="disallow" AllowAdvertise="no" Display="hidden" >
-      <ComponentRef Id="setEnviroment"/>
-      <ComponentRef Id="edlin.exe" />
-    </Feature>
   </Product>
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(env.PRODUCTSYSFILES)" />
       <Directory Id="$(env.PRODUCTPROGFILES)">
         <Directory Id="COMPANYDIR" Name="rhubarb-geek-nz">
           <Directory Id="INSTALLDIR" Name="edlin" />
@@ -35,14 +25,11 @@
   </Fragment>
   <Fragment>
     <ComponentGroup Id="ProductComponents">
-      <Component Id="edlin.exe" Guid="*" Directory="INSTALLDIR" Win64="$(env.PRODUCTWIN64)">
+      <Component Id="edlin.exe" Guid="*" Directory="$(env.PRODUCTSYSFILES)" Win64="$(env.PRODUCTWIN64)">
         <File Id="edlin.exe" KeyPath="yes" Source="bin\$(env.PRODUCTARCH)\edlin.exe" />
       </Component>
       <Component Id="edlin.chm" Guid="*" Directory="INSTALLDIR" Win64="$(env.PRODUCTWIN64)">
         <File Id="edlin.chm" KeyPath="yes" Source="htmlhelp\edlin.chm" />
-      </Component>
-      <Component Id="edlmes.dll" Guid="*" Directory="INSTALLDIR" Win64="$(env.PRODUCTWIN64)">
-        <File Id="edlmes.dll" KeyPath="yes" Source="bin\$(env.PRODUCTARCH)\edlmes.dll" />
       </Component>
     </ComponentGroup>
   </Fragment>

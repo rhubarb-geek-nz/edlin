@@ -27,7 +27,7 @@ BEGIN
             VALUE "FileDescription", "edlin command line editor\0"
             VALUE "FileVersion", DEPVERS_edlin_STR4
             VALUE "InternalName", "edlin\0"
-            VALUE "LegalCopyright", "© Roger Brown. 2024\0"
+            VALUE "LegalCopyright", L"\x00A9 Roger Brown. 2024\0"
             VALUE "OriginalFilename", "EDLIN.EXE\0"
             VALUE "ProductName", "edlin\0"
             VALUE "ProductVersion", DEPVERS_edlin_STR4
@@ -39,6 +39,7 @@ BEGIN
     END
 END
 
+LANGUAGE LANG_ENGLISH, SUBLANG_NEUTRAL
 STRINGTABLE
 BEGIN
     EDLMES_EOF, "End of input file\r\n"
@@ -56,4 +57,24 @@ BEGIN
     EDLMES_NEWFIL, "New file\r\n"
     EDLMES_NN, "Nn"
     EDLMES_YY, "Yy"
+END
+
+LANGUAGE LANG_GERMAN, SUBLANG_NEUTRAL
+STRINGTABLE
+BEGIN
+    EDLMES_EOF, "Ende der Eingabedatei\r\n"
+    EDLMES_PROMPT, "*"
+    EDLMES_QMES, "Abbrechen? (J/N)? "
+    EDLMES_BADCOM, "Eingabefehler\r\n"
+    EDLMES_ESCAPE, "\\\r\n"
+    EDLMES_CTRLC, "^C\r\n\r\n"
+    EDLMES_NDNAME, "Dateiname fehlt\r\n"
+    EDLMES_NOSUCH, "Nicht gefunden\r\n"
+    EDLMES_ASK, "Okay? "
+    EDLMES_MRGERR, L"Nicht gen\x00FCgend Speicher f\x00FCr die gesamte Datei\r\n"
+    EDLMES_MEMFUL, "Kein Speicher mehr frei\r\n"
+    EDLMES_TOOLNG, "Zeile ist zu lang\r\n"
+    EDLMES_NEWFIL, "Neue Datei\r\n"
+    EDLMES_NN, "Nn"
+    EDLMES_YY, "Jj"
 END
