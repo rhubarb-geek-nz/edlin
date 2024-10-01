@@ -24,7 +24,7 @@ static WORD stringLang;
 
 static UINT LoadStringForLangW(HMODULE hInstance, UINT id, WORD lang, wchar_t* buf, UINT len)
 {
-	HRSRC hResInfo = FindResourceExW(hInstance, RT_STRING, MAKEINTRESOURCE(1+(id >> 4)), lang);
+	HRSRC hResInfo = FindResourceExW(hInstance, RT_STRING, MAKEINTRESOURCE(1 + (id >> 4)), lang);
 	UINT rc = 0;
 
 	if (hResInfo)
@@ -35,7 +35,7 @@ static UINT LoadStringForLangW(HMODULE hInstance, UINT id, WORD lang, wchar_t* b
 		if (hGlobal)
 		{
 			wchar_t* p = LockResource(hGlobal);
-			
+
 			id &= 0xF;
 
 			while (dwSize > 0)
@@ -72,7 +72,7 @@ static UINT LoadStringForLangA(HMODULE hInstance, UINT id, WORD lang, char* buf,
 	UINT i = LoadStringForLangW(hInstance, id, lang, tmp, sizeof(tmp));
 	if (i)
 	{
-		i = WideCharToMultiByte(CP_ACP, 0, tmp, i, buf, len-1, NULL, NULL);
+		i = WideCharToMultiByte(fileCodePage, 0, tmp, i, buf, len - 1, NULL, NULL);
 		if (i < len)
 		{
 			buf[i] = 0;
@@ -166,7 +166,7 @@ int edlinStdIn(wchar_t* ch)
 	return FALSE;
 }
 
-static struct vk_map
+static const struct vk_map
 {
 	int key;
 	unsigned short vk;
@@ -195,7 +195,7 @@ static struct vk_map
 	{ 21, VK_F10 }
 };
 
-static int vk_map_lookup(int key, struct vk_map* map, size_t num, unsigned short* vk, wchar_t* ch)
+static int vk_map_lookup(int key, const struct vk_map* map, size_t num, unsigned short* vk, wchar_t* ch)
 {
 	while (num--)
 	{
@@ -554,7 +554,7 @@ int main(int argc, char** argv)
 
 	{
 		WORD langList[4];
-		int i = 0, j=0;
+		int i = 0, j = 0;
 		WORD w;
 
 		langList[i++] = LANGIDFROMLCID(GetThreadLocale());

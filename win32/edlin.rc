@@ -9,6 +9,8 @@
 #	define DEPVERS_edlin_INT4 0,0,0,0
 #endif
 
+1 ICON edlin.ico
+
 1 VERSIONINFO
  FILEVERSION DEPVERS_edlin_INT4
  PRODUCTVERSION DEPVERS_edlin_INT4
@@ -77,4 +79,24 @@ BEGIN
     EDLMES_NEWFIL, "Neue Datei\r\n"
     EDLMES_NN, "Nn"
     EDLMES_YY, "Jj"
+END
+
+LANGUAGE LANG_FRENCH, SUBLANG_NEUTRAL
+STRINGTABLE
+BEGIN
+    EDLMES_EOF, L"Fin du fichier d'entr\x00E9e\r\n"
+    EDLMES_PROMPT, "*"
+    EDLMES_QMES, "Annuler? (O/N)? "
+    EDLMES_BADCOM, L"Erreur d'entr\x00E9e\r\n"
+    EDLMES_ESCAPE, "\\\r\n"
+    EDLMES_CTRLC, "^C\r\n\r\n"
+    EDLMES_NDNAME, "Aucun nom de fichier\r\n"
+    EDLMES_NOSUCH, "Non trouv\r\n"
+    EDLMES_ASK, "O.K? "
+    EDLMES_MRGERR, L"Pas assez de m\x00E9moire pour le fichier complet\r\n"
+    EDLMES_MEMFUL, L"Pas assez de m\x00E9moire disponible\r\n"
+    EDLMES_TOOLNG, L"Erreur de longueur de cha\x00EEne\r\n"
+    EDLMES_NEWFIL, "Nouveau fichier\r\n"
+    EDLMES_NN, "Nn"
+    EDLMES_YY, "Oo"
 END
