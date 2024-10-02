@@ -118,6 +118,51 @@ namespace UnitTests
             0x40C, "fr-FR");
         }
 
+        [TestMethod]
+        public void TestSpanishStrings()
+        {
+            TestStrings(new Dictionary<EDLMES, string>(){
+                { EDLMES.EOF, "Fin de la entrada\r\n"},
+                { EDLMES.PROMPT, "*"},
+                { EDLMES.QMES, "\x00BFAbortar? (S/N)? "},
+                { EDLMES.BADCOM, "Error de entrada\r\n"},
+                { EDLMES.ESCAPE, "\\\r\n"},
+                { EDLMES.CTRLC, "^C\r\n\r\n"},
+                { EDLMES.NDNAME, "Falta el nombre del archivo\r\n"},
+                { EDLMES.NOSUCH, "No hay texto coincidente\r\n"},
+                { EDLMES.ASK, "\x00BFDe acuerdo? "},
+                { EDLMES.MRGERR, "No hay suficiente espacio para todo el archivo\r\n"},
+                { EDLMES.MEMFUL, "No hay espacio disponible\r\n"},
+                { EDLMES.TOOLNG, "La l\x00EDnea es demasiado larga\r\n"},
+                { EDLMES.NEWFIL, "Nuevo archivo\r\n"},
+                { EDLMES.NN, "Nn"},
+                { EDLMES.YY, "Ss"}
+            },
+            0x40A, "es-ES_tradnl");
+        }
+
+        [TestMethod]
+        public void TestItalianStrings()
+        {
+            TestStrings(new Dictionary<EDLMES, string>(){
+                { EDLMES.EOF, "Fine dell'input\r\n"},
+                { EDLMES.PROMPT, "*"},
+                { EDLMES.QMES, "Interrompere? (S/N)? "},
+                { EDLMES.BADCOM, "Errore di immissione\r\n"},
+                { EDLMES.ESCAPE, "\\\r\n"},
+                { EDLMES.CTRLC, "^C\r\n\r\n"},
+                { EDLMES.NDNAME, "Nome file mancante\r\n"},
+                { EDLMES.NOSUCH, "Non trovato\r\n"},
+                { EDLMES.ASK, "OK? "},
+                { EDLMES.MRGERR, "Spazio insufficiente per l'intero file\r\n"},
+                { EDLMES.MEMFUL, "Nessuno spazio disponibile\r\n"},
+                { EDLMES.TOOLNG, "Riga troppo lunga\r\n"},
+                { EDLMES.NEWFIL, "Nuovo file\r\n"},
+                { EDLMES.NN, "Nn"},
+                { EDLMES.YY, "Ss"}
+            },
+            0x410, "it-IT");
+        }
 
         void TestStrings(IDictionary<EDLMES, string> strings, UInt16 lang, string name)
         {

@@ -100,3 +100,43 @@ BEGIN
     EDLMES_NN, "Nn"
     EDLMES_YY, "Oo"
 END
+
+LANGUAGE LANG_SPANISH, SUBLANG_NEUTRAL
+STRINGTABLE
+BEGIN
+    EDLMES_EOF, L"Fin de la entrada\r\n"
+    EDLMES_PROMPT, "*"
+    EDLMES_QMES, L"\x00BFAbortar? (S/N)? "
+    EDLMES_BADCOM, L"Error de entrada\r\n"
+    EDLMES_ESCAPE, "\\\r\n"
+    EDLMES_CTRLC, "^C\r\n\r\n"
+    EDLMES_NDNAME, "Falta el nombre del archivo\r\n"
+    EDLMES_NOSUCH, "No hay texto coincidente\r\n"
+    EDLMES_ASK, L"\x00BFDe acuerdo? "
+    EDLMES_MRGERR, L"No hay suficiente espacio para todo el archivo\r\n"
+    EDLMES_MEMFUL, L"No hay espacio disponible\r\n"
+    EDLMES_TOOLNG, L"La l\x00EDnea es demasiado larga\r\n"
+    EDLMES_NEWFIL, "Nuevo archivo\r\n"
+    EDLMES_NN, "Nn"
+    EDLMES_YY, "Ss"
+END
+
+LANGUAGE LANG_ITALIAN, SUBLANG_NEUTRAL
+STRINGTABLE
+BEGIN
+    EDLMES_EOF, L"Fine dell'input\r\n"
+    EDLMES_PROMPT, "*"
+    EDLMES_QMES, L"Interrompere? (S/N)? "
+    EDLMES_BADCOM, L"Errore di immissione\r\n"
+    EDLMES_ESCAPE, "\\\r\n"
+    EDLMES_CTRLC, "^C\r\n\r\n"
+    EDLMES_NDNAME, "Nome file mancante\r\n"
+    EDLMES_NOSUCH, "Non trovato\r\n"
+    EDLMES_ASK, L"OK? "
+    EDLMES_MRGERR, L"Spazio insufficiente per l'intero file\r\n"
+    EDLMES_MEMFUL, L"Nessuno spazio disponibile\r\n"
+    EDLMES_TOOLNG, L"Riga troppo lunga\r\n"
+    EDLMES_NEWFIL, "Nuovo file\r\n"
+    EDLMES_NN, "Nn"
+    EDLMES_YY, "Ss"
+END
