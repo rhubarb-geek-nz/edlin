@@ -339,6 +339,12 @@ int edlinPrintMessage(int message)
 	return len;
 }
 
+void edlinPrintError(int err)
+{
+	const char* p = strerror(err);
+	edlinPrintLine((const unsigned char*)p, strlen(p));
+}
+
 static void loadString(int message, char *str, size_t len, const char *p)
 {
 #ifdef HAVE_NL_TYPES_H

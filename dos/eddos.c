@@ -278,6 +278,12 @@ int edlinPrintMessage(int message)
 	return len;
 }
 
+void edlinPrintError(int err)
+{
+	const char* p = strerror(err);
+	edlinPrintLine(p, strlen(p));
+}
+
 #ifdef __OS2__
 USHORT edlinLoadString(USHORT id, char *buf, size_t room, const char *str)
 {
@@ -339,7 +345,12 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
+
+#ifdef _WIN32
+	fileCodePage = GetACP();
+#else
 	fileCodePage = 437;
+#endif
 
 #ifdef __OS2__
 #	ifdef M_I386

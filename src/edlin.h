@@ -70,6 +70,7 @@ extern int edMainLoop(int argc, char** argv);
 extern void edExit(void);
 extern unsigned char* edlinLineFromIndex(size_t);
 extern int findChar(const unsigned char* p, char c, size_t len);
+extern void edlinPrintError(int err);
 
 #ifdef _WIN32
 extern void edlinPrintWin32Error(DWORD err);

@@ -13,12 +13,14 @@ MSI=$(APPNAME)-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).msi
 MSIX=$(BUNDLE)\$(APPNAME)-$(DEPVERS_edlin_STR4)-$(VSCMD_ARG_TGT_ARCH).msix
 MSIXBUNDLE=$(APPNAME)-$(DEPVERS_edlin_STR4).msixbundle
 CHM=htmlhelp\$(APPNAME).chm
+PNG=htmlhelp\$(APPNAME).png
 
 all: $(APP) $(MSI) $(MSIX)
 	
 clean: 
 	if exist $(APP) del $(APP)
 	if exist $(CHM) del $(CHM)
+	if exist $(PNG) del $(PNG)
 	if exist $(OBJDIR)\*.obj del $(OBJDIR)\*.obj
 	if exist $(OBJDIR) rmdir $(OBJDIR)
 	if exist $(BINDIR) rmdir $(BINDIR)
@@ -75,7 +77,10 @@ $(MSIXBUNDLE):
 	makeappx bundle /d $(BUNDLE) /p $@
 	signtool sign /sha1 "$(BundleThumbprint)" /fd SHA256 /t http://timestamp.digicert.com $@
 
-$(CHM): htmlhelp\$(APPNAME).hhp
+$(PNG): assets\Square150x150Logo.png
+	COPY /Y assets\Square150x150Logo.png $@
+
+$(CHM): htmlhelp\$(APPNAME).hhp $(PNG)
 	cd htmlhelp
 	-"$(COMSPEC)" /C "%%ProgramFiles(x86)%%\\HTML Help Workshop\hhc.exe" $(APPNAME).hhp
 	cd ..

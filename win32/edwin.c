@@ -488,6 +488,33 @@ extern const char* edlinGetMessage(int message)
 	return NULL;
 }
 
+static  const struct { int err; DWORD dwErr; } errorMap[] =
+{
+	{ ENOENT,ERROR_FILE_NOT_FOUND },
+	{ EACCES,ERROR_ACCESS_DENIED},
+	{ EEXIST,ERROR_ALREADY_EXISTS }
+};
+
+void edlinPrintError(int err)
+{
+	unsigned char buf[256];
+	int i = _countof(errorMap);
+
+	while (i--)
+	{
+		if (err == errorMap[i].err)
+		{
+			edlinPrintWin32Error(errorMap[i].dwErr);
+			return;
+		}
+	}
+
+	if (!strerror_s(buf, sizeof(buf), err))
+	{
+		edlinPrintLine(buf, strlen(buf));
+	}
+}
+
 static BOOL containsLang(const WORD* p, int len, WORD lang)
 {
 	while (len--)

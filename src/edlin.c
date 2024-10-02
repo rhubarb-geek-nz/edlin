@@ -44,49 +44,6 @@ const char edlinControlChar[] = {
 	'P','Q','R','S','T','U','V','W',
 	'X','Y','Z','[','\\',']','^','_' };
 
-#ifdef _WIN32
-static  const struct { int err; DWORD dwErr; } errorMap[] =
-{
-	{ ENOENT,ERROR_FILE_NOT_FOUND },
-	{ EACCES,ERROR_ACCESS_DENIED},
-	{ EEXIST,ERROR_ALREADY_EXISTS }
-};
-#endif
-
-void edlinPrintError(int err)
-{
-#ifdef _WIN32
-	int i = _countof(errorMap);
-
-	while (i--)
-	{
-		if (err == errorMap[i].err)
-		{
-			edlinPrintWin32Error(errorMap[i].dwErr);
-			return;
-		}
-	}
-
-#	ifdef __WATCOMC__
-	{
-		const unsigned char* p = strerror(err);
-		edlinPrintLine(p, strlen(p));
-	}
-#	else
-	{
-		unsigned char buf[256];
-		if (!strerror_s(buf, sizeof(buf), err))
-		{
-			edlinPrintLine(buf, strlen(buf));
-		}
-	}
-#	endif
-#else
-	const char* p = strerror(err);
-	edlinPrintLine((const unsigned char*)p, strlen(p));
-#endif
-}
-
 void edExit(void)
 {
 	if (fileMainRead)

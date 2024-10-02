@@ -85,6 +85,8 @@ With Visual Studio installed, run the [package.ps1](package.ps1) script. The bui
 C:> PowerShell -ExecutionPolicy ByPass .\package.ps1 -CertificateThumbprint 601A8B683F791E51F647D34AD102C38DA4DDB65F -BundleThumbprint 5F88DFB53180070771D4507244B2C9C622D741F8
 ```
 
+The MSI installs the help file in `c:\Program Files\rhubarb-geek-nz\edlin` and the application in `c:\windows\system32`.
+
 ### Build for macOS
 
 Use the [package.ps1](package.ps1) script. The build system is set up to sign executables and packages. This will perform two builds, as x86_64 and arm64, and sign them independently before merging with lipo and packaging.
