@@ -8,7 +8,6 @@
 #		define _countof(x)     	(sizeof(x)/sizeof(x[0]))
 #		define strcat_s(a,b,c)	strncat(a,c,b)
 #		define strcpy_s(a,b,c)	strncpy(a,c,b)
-typedef int errno_t;
 #	endif
 #else
 #	define MAX_PATH	260
@@ -17,7 +16,6 @@ typedef int errno_t;
 #	define _countof(x)     		(sizeof(x)/sizeof(x[0]))
 #	define strcat_s(a,b,c)		strncat(a,c,b)
 #	define strcpy_s(a,b,c)		strncpy(a,c,b)
-typedef int errno_t;
 #endif
 
 extern unsigned int consoleCodePage, fileCodePage;
@@ -72,6 +70,10 @@ extern int edMainLoop(int argc, char** argv);
 extern void edExit(void);
 extern unsigned char* edlinLineFromIndex(size_t);
 extern int findChar(const unsigned char* p, char c, size_t len);
+
+#ifdef _WIN32
+extern void edlinPrintWin32Error(DWORD err);
+#endif
 
 /********************************
  * fin

@@ -12,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <termios.h>
+#include <locale.h>
 #ifdef HAVE_NL_TYPES_H
 #	include <nl_types.h>
 #endif
@@ -373,6 +374,8 @@ int main(int argc, char** argv)
 	fileCodePage = CP_UTF8;
 
 	atexit(exitHandler);
+
+	setlocale(LC_ALL, "");
 
 #ifdef HAVE_NL_TYPES_H
 	nlCat = catopen("edlin", 0);

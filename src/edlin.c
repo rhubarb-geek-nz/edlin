@@ -44,10 +44,47 @@ const char edlinControlChar[] = {
 	'P','Q','R','S','T','U','V','W',
 	'X','Y','Z','[','\\',']','^','_' };
 
-void edlinPrintError(errno_t err)
+#ifdef _WIN32
+static  const struct { int err; DWORD dwErr; } errorMap[] =
 {
+	{ ENOENT,ERROR_FILE_NOT_FOUND },
+	{ EACCES,ERROR_ACCESS_DENIED},
+	{ EEXIST,ERROR_ALREADY_EXISTS }
+};
+#endif
+
+void edlinPrintError(int err)
+{
+#ifdef _WIN32
+	int i = _countof(errorMap);
+
+	while (i--)
+	{
+		if (err == errorMap[i].err)
+		{
+			edlinPrintWin32Error(errorMap[i].dwErr);
+			return;
+		}
+	}
+
+#	ifdef __WATCOMC__
+	{
+		const unsigned char* p = strerror(err);
+		edlinPrintLine(p, strlen(p));
+	}
+#	else
+	{
+		unsigned char buf[256];
+		if (!strerror_s(buf, sizeof(buf), err))
+		{
+			edlinPrintLine(buf, strlen(buf));
+		}
+	}
+#	endif
+#else
 	const char* p = strerror(err);
 	edlinPrintLine((const unsigned char*)p, strlen(p));
+#endif
 }
 
 void edExit(void)
@@ -66,8 +103,8 @@ void edExit(void)
 
 	if (tmpFileName[0])
 	{
-#if defined(_WIN32) && !defined(__WATCOMC__)
-		_unlink(tmpFileName);
+#ifdef _WIN32
+		DeleteFileA(tmpFileName);
 #else
 		unlink(tmpFileName);
 #endif
@@ -111,7 +148,7 @@ int edlinFileRead(unsigned char* line, FILE* fp)
 			}
 			else
 			{
-				errno_t err = ferror(fp);
+				int err = ferror(fp);
 				edlinPrintError(err);
 				rc = -1;
 			}
@@ -1263,7 +1300,7 @@ void edlinMove(void)
 void edlinMerge(void)
 {
 	FILE* fp;
-	errno_t err;
+	int err;
 	size_t index = currentLine;
 	char name[256];
 	unsigned char* store;
@@ -1663,13 +1700,22 @@ int edlinExit(void)
 		}
 
 #ifdef EDLIN_DOSFILESYSTEM
-#	ifdef __WATCOMC__
-		unlink(fileName);
+#	ifdef _WIN32
+		DeleteFileA(fileName);
 #	else
-		_unlink(fileName);
+		unlink(fileName);
 #	endif
 #endif
 
+#ifdef _WIN32
+		if (!MoveFileA(mainFileName, fileName))
+		{
+			edlinPrintWin32Error(GetLastError());
+			edlinArgLength = 0;
+
+			return -1;
+		}
+#else
 		if (rename(mainFileName, fileName))
 		{
 			edlinPrintError(errno);
@@ -1677,6 +1723,7 @@ int edlinExit(void)
 
 			return -1;
 		}
+#endif
 	}
 
 	if (fileTmpWrite)
@@ -1687,6 +1734,15 @@ int edlinExit(void)
 
 	if (tmpFileName[0])
 	{
+#ifdef _WIN32
+		if (!MoveFileA(tmpFileName, mainFileName))
+		{
+			edlinPrintWin32Error(GetLastError());
+			edlinArgLength = 0;
+
+			return -1;
+		}
+#else
 		if (rename(tmpFileName, mainFileName))
 		{
 			edlinPrintError(errno);
@@ -1694,6 +1750,7 @@ int edlinExit(void)
 
 			return -1;
 		}
+#endif
 
 		tmpFileName[0] = 0;
 	}
@@ -1703,7 +1760,7 @@ int edlinExit(void)
 
 int edMainLoop(int argc, char** argv)
 {
-	errno_t err;
+	int err;
 	char running = 1;
 
 	while (--argc)

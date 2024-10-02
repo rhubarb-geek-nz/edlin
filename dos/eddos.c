@@ -309,6 +309,26 @@ USHORT edlinLoadString(USHORT id, char *buf, size_t room, const char *str)
 }
 #endif
 
+#ifdef _WIN32
+void edlinPrintWin32Error(DWORD err)
+{
+	char buf[256];
+	DWORD len = FormatMessageA(
+		FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL,
+		err,
+		0,
+		buf,
+		sizeof(buf),
+		NULL);
+
+	if (len)
+	{
+		edlinPrint(buf, len);
+	}
+}
+#endif
+
 int main(int argc, char** argv)
 {
 	isTTY = isatty(0);
@@ -348,7 +368,9 @@ int main(int argc, char** argv)
 
 	atexit(exitHandler);
 
+#if defined(_WIN32) || defined(__DOS__) || defined(__OS2__)
 	signal(SIGINT,SIG_IGN);
+#endif
 
 	return edMainLoop(argc, argv);
 }
