@@ -1,0 +1,18 @@
+; Copyright (c) 2024 Roger Brown.
+; Licensed under the MIT License.
+EDL
+EDL1000I: Fine dell'input
+EDL1001P: *%0
+EDL1002P: Interrompere? (S/N)? %0
+EDL1003E: Errore di immissione
+EDL1004P: \
+EDL1005P: ^C
+EDL1006E: Nome file mancante
+EDL1007I: Non trovato
+EDL1008P: OK? %0
+EDL1009E: Spazio insufficiente per l'intero file
+EDL1010E: Nessuno spazio disponibile
+EDL1011E: Riga troppo lunga
+EDL1012I: Nuovo file
+EDL1013P: Nn%0
+EDL1014P: Ss%0

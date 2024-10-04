@@ -1,17 +1,16 @@
 ; Copyright (c) 2024 Roger Brown.
 ; Licensed under the MIT License.
-; Sample message file intended to be different to English defaults
 EDL
 EDL1000I: Ende der Eingabedatei
 EDL1001P: *%0
-EDL1002P: Abbrechen? (J/N) %0
+EDL1002P: Abbrechen? (J/N)? %0
 EDL1003E: Eingabefehler
 EDL1004P: \
 EDL1005P: ^C
 EDL1006E: Dateiname fehlt
 EDL1007I: Nicht gefunden
 EDL1008P: Okay? %0
-EDL1009E: Nicht genuegend Speicher fuer die gesamte Datei
+EDL1009E: Nicht genügend Speicher für die gesamte Datei
 EDL1010E: Kein Speicher mehr frei
 EDL1011E: Zeile ist zu lang
 EDL1012I: Neue Datei

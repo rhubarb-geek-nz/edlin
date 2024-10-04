@@ -4,6 +4,7 @@
 all: dist
 
 APPNAME=edlin
+MSGLANG=de
 
 dist: $(APPNAME)
 	pkg/$$(uname)
@@ -36,5 +37,5 @@ install: $(APPNAME)
 		fi; \
 	fi
 
-$(APPNAME).cat: posix/$(APPNAME).msg
-	gencat $@ posix/$(APPNAME).msg
+$(APPNAME).cat: posix/nls/$(APPNAME)-$(MSGLANG).msg
+	gencat $@ posix/nls/$(APPNAME)-$(MSGLANG).msg

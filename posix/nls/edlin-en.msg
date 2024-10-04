@@ -1,0 +1,18 @@
+$ codeset=utf-8
+$quote "
+$set 1
+1000 "End of input file\r\n"
+1001 "*"
+1002 "Abort edit (Y/N)? "
+1003 "Entry error\r\n"
+1004 "\\\r\n"
+1005 "^C\r\n\r\n"
+1006 "File name must be specified\r\n"
+1007 "Not found.\r\n"
+1008 "O.K.? "
+1009 "Not enough room to merge the entire file\r\n"
+1010 "Insufficient memory\r\n"
+1011 "Line too long\r\n"
+1012 "New file\r\n"
+1013 "Nn"
+1014 "Yy"

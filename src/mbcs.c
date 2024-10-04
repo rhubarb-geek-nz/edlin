@@ -11,8 +11,7 @@
 #include <stdlib.h>
 #include "mbcs.h"
 
-#ifdef __WATCOMC__
-#else
+#ifdef MBCS_LOOKUP
 static const struct
 {
 	const int codePage;
@@ -176,8 +175,7 @@ wchar_t mbcsToChar(unsigned int cp, const unsigned char* p, int len)
 		return ((c & 0x7) << 18) | ((p[1] & 0x3F) << 12) | ((p[2] & 0x3F) << 6) | (p[3] & 0x3F);
 #endif
 	}
-#ifdef __WATCOMC__
-#else
+#ifdef MBCS_LOOKUP
 	else
 	{
 		int k = sizeof(codePageList) / sizeof(codePageList[0]);
@@ -237,8 +235,7 @@ int mbcsFromChar(unsigned int cp, wchar_t ch, unsigned char* p)
 		return 4;
 #endif
 	}
-#ifdef __WATCOMC__
-#else
+#ifdef MBCS_LOOKUP
 	else
 	{
 		int k = sizeof(codePageList) / sizeof(codePageList[0]);

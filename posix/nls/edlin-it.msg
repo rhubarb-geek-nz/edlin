@@ -1,0 +1,18 @@
+$ codeset=utf-8
+$quote "
+$set 1
+1000 "Fine dell'input\r\n"
+1001 "*"
+1002 "Interrompere? (S/N)? "
+1003 "Errore di immissione\r\n"
+1004 "\\\r\n"
+1005 "^C\r\n\r\n"
+1006 "Nome file mancante\r\n"
+1007 "Non trovato\r\n"
+1008 "OK? "
+1009 "Spazio insufficiente per l'intero file\r\n"
+1010 "Nessuno spazio disponibile\r\n"
+1011 "Riga troppo lunga\r\n"
+1012 "Nuovo file\r\n"
+1013 "Nn"
+1014 "Ss"

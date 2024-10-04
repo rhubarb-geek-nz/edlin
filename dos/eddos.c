@@ -356,8 +356,8 @@ int main(int argc, char** argv)
 #	ifdef M_I386
 	{
 		ULONG codePages[8];
-		ULONG dataLength=_countof(codePages);
-		if (!DosQueryCp(sizeof(codePages),codePages,&dataLength))
+		ULONG dataLength = _countof(codePages);
+		if (!DosQueryCp(sizeof(codePages), codePages, &dataLength))
 		{
 			fileCodePage = codePages[0];
 		}
@@ -365,8 +365,8 @@ int main(int argc, char** argv)
 #	else
 	{
 		USHORT codePages[8];
-		USHORT dataLength=_countof(codePages);
-		if (!DosGetCp(sizeof(codePages),codePages,&dataLength))
+		USHORT dataLength = _countof(codePages);
+		if (!DosGetCp(sizeof(codePages), codePages, &dataLength))
 		{
 			fileCodePage = codePages[0];
 		}

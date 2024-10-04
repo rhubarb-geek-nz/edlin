@@ -1,0 +1,18 @@
+$ codeset=utf-8
+$quote "
+$set 1
+1000 "Fin de la entrada\r\n"
+1001 "*"
+1002 "¿Abortar? (S/N)? "
+1003 "Error de entrada\r\n"
+1004 "\\\r\n"
+1005 "^C\r\n\r\n"
+1006 "Falta el nombre del archivo\r\n"
+1007 "No hay texto coincidente\r\n"
+1008 "¿De acuerdo? "
+1009 "No hay suficiente espacio para todo el archivo\r\n"
+1010 "No hay espacio disponible\r\n"
+1011 "La línea es demasiado larga\r\n"
+1012 "Nuevo archivo\r\n"
+1013 "Nn"
+1014 "Ss"

@@ -1,0 +1,18 @@
+$ codeset=utf-8
+$quote "
+$set 1
+1000 "Fin du fichier d'entrée\r\n"
+1001 "*"
+1002 "Annuler? (O/N)? "
+1003 "Erreur d'entrée\r\n"
+1004 "\\\r\n"
+1005 "^C\r\n\r\n"
+1006 "Aucun nom de fichier\r\n"
+1007 "Non trouv\r\n"
+1008 "O.K? "
+1009 "Pas assez de mémoire pour le fichier complet\r\n"
+1010 "Pas assez de mémoire disponible\r\n"
+1011 "Erreur de longueur de chaîne\r\n"
+1012 "Nouveau fichier\r\n"
+1013 "Nn"
+1014 "Oo"

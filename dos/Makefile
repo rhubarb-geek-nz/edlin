@@ -4,8 +4,10 @@
 CFLAGS=-I..\src -d0 -DHAVE_UNISTD_H -DWIN32_LEAN_AND_MEAN -DEDLIN_DOSFILESYSTEM
 SRCFILES=..\src\edlin.c ..\src\readline.c ..\src\mbcs.c eddos.c
 HDRFILES=..\src\edlin.h ..\src\readline.h ..\src\mbcs.h
+READFILES=..\src\mbcs.c readutf8.c
+MSGLANG=de
 
-all: edlin.exe edlin.com 286\edlin.exe 386\edlin.exe
+all: edlin.exe edlin.com 286\edlin.exe 386\edlin.exe 286\readutf8.exe 386\readutf8.exe
 
 clean: .SYMBOLIC
 	if exist *.err del *.err
@@ -14,6 +16,8 @@ clean: .SYMBOLIC
 	if exist edlin.com del edlin.com
 	if exist 286\edlin.exe del 286\edlin.exe
 	if exist 386\edlin.exe del 386\edlin.exe
+	if exist 286\readutf8.exe del 286\readutf8.exe
+	if exist 386\readutf8.exe del 386\readutf8.exe
 	if exist 286 rmdir 286
 	if exist 386 rmdir 386
 
@@ -32,13 +36,26 @@ edlin.exe: $(SRCFILES) $(HDRFILES)
 	del *.obj
 	if exist *.err exit 1
 
+286\readutf8.exe: $(READFILES) $(HDRFILES) 286
+	wcl.exe -2 -bcl=os2 -lp $(READFILES) -fe=$@ $(CFLAGS) -I$(%WATCOM)\h\os21x -DMBCS_LOOKUP
+	del *.obj
+	if exist *.err exit 1
+
 386\edlin.exe: $(SRCFILES) $(HDRFILES) 386
 	wcl386.exe $(SRCFILES) -fe=$@ $(CFLAGS)
+	del *.obj
+	if exist *.err exit 1
+
+386\readutf8.exe: $(READFILES) $(HDRFILES) 386
+	wcl386.exe $(READFILES) -fe=$@ $(CFLAGS) -DMBCS_LOOKUP
 	del *.obj
 	if exist *.err exit 1
 
 286 386: .SYMBOLIC
 	if not exist $@ mkdir $@
 
-edlin.msg: edlin.txt
-	mkmsgf edlin.txt $@
+edlin-$(MSGLANG).txt: nls\edlin-$(MSGLANG).txt 386\readutf8.exe
+	386\readutf8.exe nls\edlin-$(MSGLANG).txt >$@
+
+edlin.msg: edlin-$(MSGLANG).txt
+	mkmsgf edlin-$(MSGLANG).txt $@

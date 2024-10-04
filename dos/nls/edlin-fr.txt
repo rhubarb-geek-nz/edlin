@@ -1,0 +1,18 @@
+; Copyright (c) 2024 Roger Brown.
+; Licensed under the MIT License.
+EDL
+EDL1000I: Fin du fichier d'entrée
+EDL1001P: *%0
+EDL1002P: Annuler? (O/N)? %0
+EDL1003E: Erreur d'entrée
+EDL1004P: \
+EDL1005P: ^C
+EDL1006E: Aucun nom de fichier
+EDL1007I: Non trouv
+EDL1008P: O.K? %0
+EDL1009E: Pas assez de mémoire pour le fichier complet
+EDL1010E: Pas assez de mémoire disponible
+EDL1011E: Erreur de longueur de chaîne
+EDL1012I: Nouveau fichier
+EDL1013P: Nn%0
+EDL1014P: Oo%0
