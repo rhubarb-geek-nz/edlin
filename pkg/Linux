@@ -187,7 +187,6 @@ then
 	mkdir -p data/install data/root
 	mv data/usr/share/man data/usr/man
 	mv data/usr/share/doc data/usr/doc
-	rmdir data/usr/share
 	mv "data/usr/doc/$PKGNAME" "data/usr/doc/$PKGNAME-$VERSION"
 
 	cat > data/install/slack-desc <<EOF
@@ -218,7 +217,7 @@ EOF
 			;;
 	esac
 	
-	tar --create --owner=0 --group=0 --gzip --file "$PKGNAME-$VERSION-$ARCH-1_slack$OSVER.tgz" -C data/root . -C .. usr/bin/edlin "usr/doc/$PKGNAME-$VERSION" usr/man/man1/edlin.1.gz install/slack-desc
+	tar --create --owner=0 --group=0 --gzip --file "$PKGNAME-$VERSION-$ARCH-1_slack$OSVER.tgz" -C data/root . -C .. $( cd data ; find usr -type f -name "edlin*" ) install/slack-desc
 fi
 
 if $ISIPK
