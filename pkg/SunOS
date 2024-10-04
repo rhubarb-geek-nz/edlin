@@ -27,6 +27,12 @@ mkdir -p "$PKGROOT/bin" "$PKGROOT/share/man/man1" "$PKGTMP"
 cp "$APPNAME" "$PKGROOT/bin"
 cp "$APPNAME.1" "$PKGROOT/share/man/man1"
 
+for d in de en es fr it
+do
+	mkdir -p "$PKGROOT/share/locale/$d/LC_MESSAGES"
+	gencat "$PKGROOT/share/locale/$d/LC_MESSAGES/edlin.cat" "posix/nls/edlin-$d.msg"
+done
+
 if file edlin | grep " AMD64 "
 then
 	PKGARCH=amd64
@@ -51,6 +57,13 @@ rm -rf "$PKGFILE"
 	echo i pkginfo
 	echo f none "bin/$APPNAME" 0755 root root
 	echo f none "share/man/man1/$APPNAME.1" 0444 root root
+	(
+		cd "$PKGROOT"
+		find share/locale -type f -name edlin.cat | while read N
+		do
+			echo f none "$N" 0444 root root
+		done
+	)
 ) >"$INTDIR/prototype"
 
 pkgmk -o -r "$PKGROOT" -d "$PKGTMP" -f "$INTDIR/prototype" "$PKGNAME"

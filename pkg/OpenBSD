@@ -14,16 +14,23 @@ trap cleanup 0
 
 cleanup
 
-mkdir -p root/usr/bin root/usr/share/man/man1 meta unsigned 
+mkdir -p root/usr/local/bin root/usr/local/man/man1 meta unsigned
 
-cp edlin root/usr/bin
-strip root/usr/bin/edlin
-cp edlin.1 root/usr/share/man/man1
+cp edlin root/usr/local/bin
+strip root/usr/local/bin/edlin
+cp edlin.1 root/usr/local/man/man1
 
-cat > meta/CONTENTS << EOF
-usr/bin/edlin
-usr/share/man/man1/edlin.1
-EOF
+for A in de en es fr it
+do
+	mkdir -p "root/usr/local/share/locale/$A/LC_MESSAGES"
+	gencat "root/usr/local/share/locale/$A/LC_MESSAGES/edlin.cat" "posix/nls/edlin-$A.msg"
+done
+
+(
+	set -e
+	cd root
+	find usr/local -type f -name "edlin*"
+) > meta/CONTENTS
 
 echo "Text Editor based on MS-DOS edlin" >"meta/COMMENT"
 

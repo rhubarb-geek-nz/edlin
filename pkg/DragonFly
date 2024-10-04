@@ -14,11 +14,17 @@ trap cleanup 0
 
 cleanup
 
-mkdir -p root/usr/bin root/usr/share/man/man1
+mkdir -p root/usr/local/bin root/usr/local/man/man1
 
-cp edlin root/usr/bin
-strip root/usr/bin/edlin
-gzip < edlin.1 > root/usr/share/man/man1/edlin.1.gz
+cp edlin root/usr/local/bin
+strip root/usr/local/bin/edlin
+gzip < edlin.1 > root/usr/local/man/man1/edlin.1.gz
+
+for A in de en es fr it
+do
+	mkdir -p "root/usr/local/share/locale/$A/LC_MESSAGES"
+	gencat "root/usr/local/share/locale/$A/LC_MESSAGES/edlin.cat" "posix/nls/edlin-$A.msg"
+done
 
 cat > MANIFEST <<EOF
 name $PKGNAME
@@ -28,12 +34,12 @@ www https://github.com/rhubarb-geek-nz/edlin
 origin editors/edlin
 comment Text Editor based on MS-DOS edlin
 maintainer rhubarb-geek-nz@users.sourceforge.net
-prefix /usr
+prefix /usr/local
 EOF
 
-cat > PLIST <<EOF
-bin/edlin
-share/man/man1/edlin.1.gz
-EOF
+(
+	cd root/usr/local
+	find * -type f -name "edlin*"
+) > PLIST
 
 pkg create -M MANIFEST -o . -r root -v -p PLIST

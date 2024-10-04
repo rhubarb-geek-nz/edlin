@@ -14,11 +14,17 @@ trap cleanup 0
 
 cleanup
 
-mkdir -p root/usr/bin root/usr/share/man/man1 meta
+mkdir -p root/usr/pkg/bin root/usr/pkg/man/man1 meta
 
-cp edlin root/usr/bin
-strip root/usr/bin/edlin
-cp edlin.1 root/usr/share/man/man1
+cp edlin root/usr/pkg/bin
+strip root/usr/pkg/bin/edlin
+cp edlin.1 root/usr/pkg/man/man1
+
+for A in de en es fr it
+do
+	mkdir -p "root/usr/pkg/share/locale/$A/LC_MESSAGES"
+	gencat "root/usr/pkg/share/locale/$A/LC_MESSAGES/edlin.cat" "posix/nls/edlin-$A.msg"
+done
 
 (
 	echo HOMEPAGE=https://github.com/rhubarb-geek-nz/edlin
@@ -28,11 +34,11 @@ cp edlin.1 root/usr/share/man/man1
 	echo PKGTOOLS_VERSION=$(pkg_info -V)
 ) > meta/BUILD_INFO
 
-cat > meta/CONTENTS << EOF
-@name edlin-$VERSION
-usr/bin/edlin
-usr/share/man/man1/edlin.1
-EOF
+(
+	echo "@name edlin-$VERSION"
+	cd root
+	find usr -type f -name "edlin*"
+) > meta/CONTENTS
 
 echo "Text Editor based on MS-DOS edlin" >"meta/COMMENT"
 
