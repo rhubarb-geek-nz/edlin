@@ -10,6 +10,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests", "tests\tests.csproj
 		{7CA603F8-F8D6-472B-9EE3-6AC793528DF2} = {7CA603F8-F8D6-472B-9EE3-6AC793528DF2}
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nlstool", "nlstool\nlstool.csproj", "{2256277D-989C-4241-9680-0C11B7EB8C94}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7CA603F8-F8D6-472B-9EE3-6AC793528DF2} = {7CA603F8-F8D6-472B-9EE3-6AC793528DF2}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +69,26 @@ Global
 		{C28CDF40-41CA-4F30-9C23-529A8A3E15FB}.Release|x64.Build.0 = Release|Any CPU
 		{C28CDF40-41CA-4F30-9C23-529A8A3E15FB}.Release|x86.ActiveCfg = Release|Any CPU
 		{C28CDF40-41CA-4F30-9C23-529A8A3E15FB}.Release|x86.Build.0 = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|ARM.Build.0 = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|x64.Build.0 = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Debug|x86.Build.0 = Debug|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|ARM.ActiveCfg = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|ARM.Build.0 = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|ARM64.Build.0 = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|x64.ActiveCfg = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|x64.Build.0 = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|x86.ActiveCfg = Release|Any CPU
+		{2256277D-989C-4241-9680-0C11B7EB8C94}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

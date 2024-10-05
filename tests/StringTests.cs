@@ -218,9 +218,6 @@ namespace UnitTests
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern int FreeLibrary(IntPtr hModule);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Ansi)]
-        private static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
-
         [DllImport("kernel32.dll")]
         static extern IntPtr FindResourceEx(IntPtr hModule, IntPtr lpType, IntPtr lpName, UInt16 wLanguage);
 
