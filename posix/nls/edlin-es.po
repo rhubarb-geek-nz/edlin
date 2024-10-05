@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+# 1000, EDLMES_EOF
+msgid "End of input file\r\n"
+msgstr "Fin de la entrada\r\n"
+# 1001, EDLMES_PROMPT
+msgid "*"
+msgstr "*"
+# 1002, EDLMES_QMES
+msgid "Abort edit (Y/N)? "
+msgstr "¿Abortar? (S/N)? "
+# 1003, EDLMES_BADCOM
+msgid "Entry error\r\n"
+msgstr "Error de entrada\r\n"
+# 1004, EDLMES_ESCAPE
+msgid "\\\r\n"
+msgstr "\\\r\n"
+# 1005, EDLMES_CTRLC
+msgid "^C\r\n\r\n"
+msgstr "^C\r\n\r\n"
+# 1006, EDLMES_NDNAME
+msgid "File name must be specified\r\n"
+msgstr "Falta el nombre del archivo\r\n"
+# 1007, EDLMES_NOSUCH
+msgid "Not found.\r\n"
+msgstr "No hay texto coincidente\r\n"
+# 1008, EDLMES_ASK
+msgid "O.K.? "
+msgstr "¿De acuerdo? "
+# 1009, EDLMES_MRGERR
+msgid "Not enough room to merge the entire file\r\n"
+msgstr "No hay suficiente espacio para todo el archivo\r\n"
+# 1010, EDLMES_MEMFUL
+msgid "Insufficient memory\r\n"
+msgstr "No hay espacio disponible\r\n"
+# 1011, EDLMES_TOOLNG
+msgid "Line too long\r\n"
+msgstr "La línea es demasiado larga\r\n"
+# 1012, EDLMES_NEWFIL
+msgid "New file\r\n"
+msgstr "Nuevo archivo\r\n"
+# 1013, EDLMES_NN
+msgid "Nn"
+msgstr "Nn"
+# 1014, EDLMES_YY
+msgid "Yy"
+msgstr "Ss"

@@ -58,7 +58,7 @@ strip data/usr/bin/edlin
 for d in de en es fr it
 do
 	mkdir -p "data/usr/share/locale/$d/LC_MESSAGES"
-	gencat "data/usr/share/locale/$d/LC_MESSAGES/$PKGNAME" "posix/nls/$PKGNAME-$d.msg"
+	msgfmt -o "data/usr/share/locale/$d/LC_MESSAGES/$PKGNAME.mo" "posix/nls/$PKGNAME-$d.po"
 done
 
 sed --quiet < src/edlin.c '/\*\*\*\*/,/^ \*\//p' | grep -v '\*\*\*' | grep -v '^ \*/' | while read A B
@@ -161,7 +161,7 @@ EOF
 EOF
 		fi
 
-		find usr/share/locale -type f -name edlin | while read N
+		find usr/share/locale -type f -name edlin.mo | while read N
 		do
 			echo "%attr(444,root,root) /$N"
 		done

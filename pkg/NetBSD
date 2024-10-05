@@ -14,16 +14,16 @@ trap cleanup 0
 
 cleanup
 
-mkdir -p root/usr/pkg/bin root/usr/pkg/man/man1 meta
+mkdir -p root/usr/bin root/usr/share/man/man1 meta
 
-cp edlin root/usr/pkg/bin
-strip root/usr/pkg/bin/edlin
-cp edlin.1 root/usr/pkg/man/man1
+cp edlin root/usr/bin
+strip root/usr/bin/edlin
+cp edlin.1 root/usr/share/man/man1
 
 for A in de en es fr it
 do
-	mkdir -p "root/usr/pkg/share/locale/$A/LC_MESSAGES"
-	gencat "root/usr/pkg/share/locale/$A/LC_MESSAGES/edlin.cat" "posix/nls/edlin-$A.msg"
+	mkdir -p "root/usr/share/locale/$A/LC_MESSAGES"
+	msgfmt -o "root/usr/share/locale/$A/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$A.po"
 done
 
 (

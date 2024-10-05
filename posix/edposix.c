@@ -13,8 +13,12 @@
 #include <unistd.h>
 #include <termios.h>
 #include <locale.h>
-#ifdef HAVE_NL_TYPES_H
-#	include <nl_types.h>
+#ifdef HAVE_LIBINTL_H
+#	include <libintl.h>
+#else
+#	ifdef HAVE_NL_TYPES_H
+#		include <nl_types.h>
+#	endif
 #endif
 #include "edlin.h"
 #include "mbcs.h"
@@ -23,7 +27,7 @@
 
 static struct termios ttyAttr;
 static int restoreAttr;
-#ifdef HAVE_NL_TYPES_H
+#if defined(HAVE_NL_TYPES_H) && !defined(HAVE_LIBINTL_H)
 static nl_catd nlCat=(nl_catd)-1;
 #endif
 static char messageYY[32], messageNN[32], messagePrompt[32];
@@ -243,7 +247,7 @@ static void exitHandler(void)
 		tcsetattr(0,TCSADRAIN,&ttyAttr);
 	}
 
-#ifdef HAVE_NL_TYPES_H
+#if defined(HAVE_NL_TYPES_H) && !defined(HAVE_LIBINTL_H)
 	if (nlCat != (nl_catd)-1)
 	{
 		catclose(nlCat);
@@ -305,11 +309,15 @@ const char *edlinGetMessage(int message)
 				{
 					const char *p = edlmes[count].text;
 
-#ifdef HAVE_NL_TYPES_H
+#ifdef HAVE_LIBINTL_H
+						p = gettext(p);
+#else
+#	ifdef HAVE_NL_TYPES_H
 					if (nlCat != (nl_catd)-1)
 					{
 						p = catgets(nlCat, 1, message, p);
 					}
+#	endif
 #endif
 
 					return p;
@@ -347,11 +355,15 @@ void edlinPrintError(int err)
 
 static void loadString(int message, char *str, size_t len, const char *p)
 {
-#ifdef HAVE_NL_TYPES_H
+#ifdef HAVE_LIBINTL_H
+	p = gettext(p);
+#else
+#	ifdef HAVE_NL_TYPES_H
 	if (nlCat != (nl_catd)-1)
 	{
 		p = catgets(nlCat, 1, message, p);
 	}
+#	endif
 #endif
 
 	strncat(str, p, len);
@@ -383,8 +395,12 @@ int main(int argc, char** argv)
 
 	setlocale(LC_ALL, "");
 
-#ifdef HAVE_NL_TYPES_H
+#ifdef HAVE_LIBINTL_H
+	textdomain("edlin");
+#else
+#	ifdef HAVE_NL_TYPES_H
 	nlCat = catopen("edlin", 0);
+#	endif
 #endif
 
 	loadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), "*");

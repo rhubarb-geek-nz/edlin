@@ -90,3 +90,19 @@ The MSI installs the help file in `c:\Program Files\rhubarb-geek-nz\edlin` and t
 ### Build for macOS
 
 Use the [package.ps1](package.ps1) script. The build system is set up to sign executables and packages. This will perform two builds, as x86_64 and arm64, and sign them independently before merging with lipo and packaging.
+
+### Build for FreeBSD, OpenBSD or DragonFly
+
+To use `gettext` with `mo` files then need to add the following
+
+```
+$ make CFLAGS="-Wall -Werror -I/usr/local/include -L/usr/local/lib -lintl"
+```
+
+### Build for NetBSD
+
+To use `gettext` with `mo` files then need to add the following
+
+```
+make CFLAGS="-Wall -Werror -lintl"
+```

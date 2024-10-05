@@ -23,7 +23,7 @@ cp edlin.1 root/usr/local/man/man1
 for A in de en es fr it
 do
 	mkdir -p "root/usr/local/share/locale/$A/LC_MESSAGES"
-	gencat "root/usr/local/share/locale/$A/LC_MESSAGES/edlin.cat" "posix/nls/edlin-$A.msg"
+	msgfmt -o "root/usr/local/share/locale/$A/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$A.po"
 done
 
 (

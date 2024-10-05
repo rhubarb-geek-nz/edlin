@@ -30,7 +30,7 @@ cp "$APPNAME.1" "$PKGROOT/share/man/man1"
 for d in de en es fr it
 do
 	mkdir -p "$PKGROOT/share/locale/$d/LC_MESSAGES"
-	gencat "$PKGROOT/share/locale/$d/LC_MESSAGES/edlin.cat" "posix/nls/edlin-$d.msg"
+	msgfmt -o "$PKGROOT/share/locale/$d/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$d.po"
 done
 
 if file edlin | grep " AMD64 "
@@ -59,7 +59,7 @@ rm -rf "$PKGFILE"
 	echo f none "share/man/man1/$APPNAME.1" 0444 root root
 	(
 		cd "$PKGROOT"
-		find share/locale -type f -name edlin.cat | while read N
+		find share/locale -type f -name edlin.mo | while read N
 		do
 			echo f none "$N" 0444 root root
 		done
