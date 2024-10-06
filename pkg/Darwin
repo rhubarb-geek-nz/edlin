@@ -20,4 +20,14 @@ umask 022
 mkdir -p bom/bin bom/share/man/man1
 cp edlin bom/bin
 gzip < edlin.1 > bom/share/man/man1/edlin.1.gz
+while read L D
+do
+	mkdir -p "bom/share/nls/$D"
+	gencat "bom/share/nls/$D/edlin.cat" "posix/nls/edlin-$L.msg"
+done << EOF
+de de_DE.UTF-8
+es es_ES.UTF-8
+fr fr_FR.UTF-8
+it it_IT.UTF-8
+EOF
 pkgbuild --root bom --identifier nz.geek.rhubarb.edlin --version "$VERSION" --install-location /usr/local --sign "Developer ID Installer: $APPLE_DEVELOPER" "$PKGNAME.pkg"
