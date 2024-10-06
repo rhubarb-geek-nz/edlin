@@ -1,4 +1,4 @@
-![title](win32/assets/Square150x150Logo.png)
+![edlin logo](win32/assets/Square150x150Logo.png)
 
 # rhubarb-geek-nz/edlin
 
@@ -68,7 +68,7 @@ There is a [configure](configure) script, [Makefile](Makefile) will run this to 
 It is recommended to pass strict compilation flags to ensure correctness of the build.
 
 ```
-$ CC=gcc make CFLAGS="-Wall -Werror -m32"
+$ CC=gcc make CFLAGS="-Wall -Werror -m32 -DEDLIN_BINDTEXTDOMAIN=\"\\\"/usr/share/locale\\\"\""
 ```
 
 ### Build for DOS

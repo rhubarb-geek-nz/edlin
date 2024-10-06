@@ -396,6 +396,9 @@ int main(int argc, char** argv)
 	setlocale(LC_ALL, "");
 
 #ifdef HAVE_LIBINTL_H
+#	ifdef EDLIN_BINDTEXTDOMAIN
+	bindtextdomain("edlin", EDLIN_BINDTEXTDOMAIN);
+#	endif
 	textdomain("edlin");
 #else
 #	ifdef HAVE_NL_TYPES_H
