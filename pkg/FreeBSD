@@ -2,6 +2,14 @@
 # Copyright (c) 2024 Roger Brown.
 # Licensed under the MIT License.
 
+if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
+then
+	:
+else
+	echo >&2 Should be using GNU gettext
+	false
+fi
+
 VERSION=$( . ./version ; echo $VERSION )
 PKGNAME=edlin
 
