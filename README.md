@@ -1,3 +1,5 @@
+![title](win32/assets/Square150x150Logo.png)
+
 # rhubarb-geek-nz/edlin
 
 Modern implementation of [edlin](https://en.wikipedia.org/wiki/Edlin) in [C](https://en.wikipedia.org/wiki/C_(programming_language)).
