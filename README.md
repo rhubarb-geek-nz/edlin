@@ -63,12 +63,10 @@ If you have PowerShell installed, use [package.ps1](package.ps1) to do the compl
 
 There is a [configure](configure) script, [Makefile](Makefile) will run this to create config.h if not already done.
 
-#### Solaris example
-
 It is recommended to pass strict compilation flags to ensure correctness of the build.
 
 ```
-$ CC=gcc make CFLAGS="-Wall -Werror -m32 -DEDLIN_BINDTEXTDOMAIN=\"\\\"/usr/share/locale\\\"\""
+$ make CFLAGS="-Wall -Werror"
 ```
 
 ### Build for DOS
@@ -107,4 +105,12 @@ To use `gettext` with `mo` files then need to add the following
 
 ```
 make CFLAGS="-Wall -Werror -lintl"
+```
+
+#### Build for Solaris
+
+Pass both `gcc` compiler and directory for the GNU gettext `mo` files.
+
+```
+$ CC=gcc make CFLAGS="-Wall -Werror -m32 -DEDLIN_BINDTEXTDOMAIN=\"\\\"/usr/share/locale\\\"\""
 ```
