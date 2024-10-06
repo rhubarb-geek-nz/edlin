@@ -107,7 +107,7 @@ To use `gettext` with `mo` files then need to add the following
 make CFLAGS="-Wall -Werror -lintl"
 ```
 
-#### Build for Solaris
+### Build for Solaris
 
 Pass both `gcc` compiler and directory for the GNU gettext `mo` files.
 
