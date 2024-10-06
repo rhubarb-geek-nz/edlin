@@ -4,7 +4,7 @@
 all: dist
 
 APPNAME=edlin
-MSGLANG=de
+LANGLIST=de en es fr it
 
 dist: $(APPNAME)
 	pkg/$$(uname)
@@ -16,14 +16,27 @@ config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
 
 clean:
-	rm -rf $(APPNAME) *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat
+	rm -rf $(APPNAME) *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat *.gz *.mo
 
-install: $(APPNAME)
+$(APPNAME).cat:
+	for d in $(LANGLIST); do gencat $(APPNAME)-$$d.cat posix/nls/$(APPNAME)-$$d.msg; done
+
+$(APPNAME).mo:
+	for d in $(LANGLIST); do msgfmt -o $(APPNAME)-$$d.mo posix/nls/$(APPNAME)-$$d.po; done
+
+$(APPNAME).1.gz: $(APPNAME).1
+	gzip < $(APPNAME).1 >$@
+
+install: $(APPNAME) $(APPNAME).1.gz $(APPNAME).mo
 	if test -n "$(INSTALL)"; \
 	then \
 		$(INSTALL) -d "$(DESTDIR)/usr/bin"; \
+		$(INSTALL) -d "$(DESTDIR)/usr/share/man/man1"; \
+		for d in $(LANGLIST); do $(INSTALL) -d "$(DESTDIR)/usr/share/locale/$$d/LC_MESSAGES"; done; \
 	else \
 		install -d "$(DESTDIR)/usr/bin"; \
+		install -d "$(DESTDIR)/usr/share/man/man1"; \
+		for d in $(LANGLIST); do install -d "$(DESTDIR)/usr/share/locale/$$d/LC_MESSAGES"; done; \
 	fi
 	if test -n "$(INSTALL_PROGRAM)"; \
 	then \
@@ -36,6 +49,17 @@ install: $(APPNAME)
 			install $(APPNAME) "$(DESTDIR)/usr/bin/$(APPNAME)"; \
 		fi; \
 	fi
-
-$(APPNAME).cat: posix/nls/$(APPNAME)-$(MSGLANG).msg
-	gencat $@ posix/nls/$(APPNAME)-$(MSGLANG).msg
+	if test -n "$(INSTALL_DATA)"; \
+	then \
+		$(INSTALL_DATA) $(APPNAME).1.gz "$(DESTDIR)/usr/share/man/man1/$(APPNAME).1.gz"; \
+		for d in $(LANGLIST); do $(INSTALL_DATA) $(APPNAME)-$$d.mo "$(DESTDIR)/usr/share/locale/$$d/LC_MESSAGES/$(APPNAME).mo"; done; \
+	else \
+		if test -n "$(INSTALL)"; \
+		then \
+			$(INSTALL) -m 644 $(APPNAME).1.gz "$(DESTDIR)/usr/share/man/man1/$(APPNAME).1.gz"; \
+			for d in $(LANGLIST); do $(INSTALL) -m 644 $(APPNAME)-$$d.mo "$(DESTDIR)/usr/share/locale/$$d/LC_MESSAGES/$(APPNAME).mo"; done; \
+		else \
+			install -m 644 $(APPNAME).1.gz "$(DESTDIR)/usr/share/man/man1/$(APPNAME).1.gz"; \
+			for d in $(LANGLIST); do install -m 644 $(APPNAME)-$$d.mo "$(DESTDIR)/usr/share/locale/$$d/LC_MESSAGES/$(APPNAME).mo"; done; \
+		fi; \
+	fi
