@@ -1,0 +1,32 @@
+# Contributor: rhubarb-geek-nz <rhubarb-geek-nz@users.sourceforge.net>
+# Maintainer: rhubarb-geek-nz <rhubarb-geek-nz@users.sourceforge.net>
+pkgname=edlin
+pkgver=0.9.6
+pkgrel=0
+pkgdesc="Text Editor based on MS-DOS edlin"
+url="https://github.com/rhubarb-geek-nz/edlin"
+arch="all"
+license="MIT"
+depends=""
+makedepends=""
+checkdepends=""
+install=""
+subpackages=""
+source="$pkgname-$pkgver.tar.gz::https://github.com/rhubarb-geek-nz/edlin/archive/refs/tags/$pkgver.tar.gz"
+
+build() {
+	make CFLAGS+="-Wall -Werror" edlin
+	strip edlin
+}
+
+check() {
+	ls -ld edlin
+}
+
+package() {
+	install -d "$pkgdir/usr/bin"
+	install edlin "$pkgdir/usr/bin"
+}
+sha512sums="
+0548118532818d143d17ef0bfbc0c2a7f52e55731cefc314009f3a189ed5bab377c3c3362e1d9395e7d38efb23d2c9cda399487bdf74f77a5ad0415022f373b4  $pkgname-$pkgver.tar.gz
+"

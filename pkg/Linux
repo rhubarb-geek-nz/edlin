@@ -28,6 +28,7 @@ ISRPM=false
 ISDEB=false
 ISIPK=false
 ISTERMUX=false
+ISMSGFMT=false
 
 if test -f /etc/os-release
 then
@@ -36,12 +37,15 @@ then
 		case "$d" in
 			debian )
 				ISDEB=true
+				ISMSGFMT=true
 				;;
 			fedora | centos | rhel | mariner | suse | opensuse )
 				ISRPM=true
+				ISMSGFMT=true
 				;;
 			slackware )
 				ISSLACK=true
+				ISMSGFMT=true
 				;;
 			openwrt )
 				ISIPK=true
@@ -66,7 +70,10 @@ strip data/usr/bin/edlin
 for d in de en es fr it
 do
 	mkdir -p "data/usr/share/locale/$d/LC_MESSAGES"
-	msgfmt -o "data/usr/share/locale/$d/LC_MESSAGES/$PKGNAME.mo" "posix/nls/$PKGNAME-$d.po"
+	if $ISMSGFMT
+	then
+		msgfmt -o "data/usr/share/locale/$d/LC_MESSAGES/$PKGNAME.mo" "posix/nls/$PKGNAME-$d.po"
+	fi
 done
 
 sed --quiet < src/edlin.c '/\*\*\*\*/,/^ \*\//p' | grep -v '\*\*\*' | grep -v '^ \*/' | while read A B

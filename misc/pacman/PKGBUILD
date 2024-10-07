@@ -1,0 +1,47 @@
+# Maintainer: rhubarb-geek-nz@users.sourceforge.net
+pkgname=edlin
+pkgver=0.9.6
+pkgrel=1
+epoch=
+pkgdesc="Text Editor based on MS-DOS edlin"
+arch=("$CARCH")
+url="https://github.com/rhubarb-geek-nz/edlin"
+license=('MIT')
+groups=()
+depends=()
+makedepends=()
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+noextract=()
+md5sums=()
+validpgpkeys=()
+source=("https://github.com/rhubarb-geek-nz/edlin/archive/refs/tags/0.9.6.tar.gz")
+sha256sums=("6b2776ce444e64602497449c0e979e473338a08f45864034615345f6f75d3908")
+
+build() {
+	cd edlin-0.9.6
+	make CFLAGS+="-Wall -Werror" edlin
+}
+
+check() {
+	test -x "edlin-0.9.6/edlin"
+}
+
+package() {
+	mkdir -p "$pkgdir/usr/bin"
+	mkdir -p "$pkgdir/usr/share/man/man1"
+	cp "edlin-0.9.6/edlin" "$pkgdir/usr/bin/edlin"
+	gzip < "edlin-0.9.6/edlin.1" > "$pkgdir/usr/share/man/man1/edlin.1.gz"
+	for d in de en es fr it
+	do
+		mkdir -p "$pkgdir/usr/share/locale/$d/LC_MESSAGES"
+		msgfmt -o "$pkgdir/usr/share/locale/$d/LC_MESSAGES/edlin.mo" "edlin-0.9.6/posix/nls/edlin-$d.po"
+	done
+}
