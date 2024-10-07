@@ -22,7 +22,7 @@ cat > a.c << EOF
 #include <stdio.h>
 int main(int argc,char **argv) { return 0; }
 EOF
-$CC $CFLAGS a.c
+$CC a.c $CFLAGS
 
 cat /dev/null >  config.h
 
@@ -31,7 +31,7 @@ cat > a.c << EOF
 struct termios t;
 int main(int argc,char **argv) { cfmakeraw(&t); return 0; }
 EOF
-if $CC $CFLAGS a.c
+if $CC a.c $CFLAGS
 then
 	echo "#define HAVE_CFMAKERAW 1" >> config.h
 fi
@@ -40,7 +40,7 @@ cat > a.c << EOF
 #include <nl_types.h>
 int main(int argc,char **argv) { catopen("edlin",0); return 0; }
 EOF
-if $CC $CFLAGS a.c
+if $CC a.c $CFLAGS
 then
 	echo "#define HAVE_NL_TYPES_H 1" >> config.h
 fi
@@ -49,7 +49,7 @@ cat > a.c << EOF
 #include <unistd.h>
 int main(int argc,char **argv) { unlink("edlin"); return 0; }
 EOF
-if $CC $CFLAGS a.c
+if $CC a.c $CFLAGS
 then
 	echo "#define HAVE_UNISTD_H 1" >> config.h
 fi
@@ -58,7 +58,7 @@ cat > a.c << EOF
 #include <libintl.h>
 int main(int argc,char **argv) { textdomain("edlin"); gettext("*"); return 0; }
 EOF
-if $CC $CFLAGS a.c
+if $CC a.c $CFLAGS
 then
 	echo "#define HAVE_LIBINTL_H 1" >> config.h
 fi

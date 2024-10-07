@@ -10,7 +10,7 @@ dist: $(APPNAME)
 	pkg/$$(uname)
 
 $(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c config.h
-	$(CC) $(CFLAGS) -I. -Isrc -DHAVE_CONFIG_H src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c -o $@
+	$(CC) -I. -Isrc -DHAVE_CONFIG_H src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c -o $@ $(CFLAGS)
 
 config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
