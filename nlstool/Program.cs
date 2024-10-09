@@ -26,7 +26,7 @@ if (hModule == IntPtr.Zero)
 
 try
 {
-    foreach (UInt16 lang in new UInt16[] { 7, 9, 10, 12, 16 })
+    foreach (UInt16 lang in new LanguageEnumerator(hModule))
     {
         new OS2MessageFile(hModule, lang, "dos", "txt").GenerateFile(dir);
         new GNUGetText(hModule, lang, "posix", "po").GenerateFile(dir);
