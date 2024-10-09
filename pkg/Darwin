@@ -38,7 +38,7 @@ EOF
 if test "$MAJOR_RELEASE" -le 8
 then
 	mv bom usr
-	tar cvfj "$PKGNAME-darwin-$RELEASE.tar.bz2" $(find usr -type f)
+	tar --create --group 0 --owner 0 --bzip2 --file "$PKGNAME-darwin-$RELEASE.tar.bz2" $(find usr -type f)
 else
 	pkgbuild \
 		--root bom \
