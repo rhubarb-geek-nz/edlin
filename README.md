@@ -91,6 +91,16 @@ The MSI installs the help file in `c:\Program Files\rhubarb-geek-nz\edlin` and t
 
 Use the [package.ps1](package.ps1) script. The build system is set up to sign executables and packages. This will perform two builds, as x86_64 and arm64, and sign them independently before merging with lipo and packaging.
 
+### Build for Darwin
+
+For earlier versions of macOS, build as a fat binary.
+
+```
+$ make CFLAGS+="-Wall -Werror -arch i386 -arch ppc"
+```
+
+This will create a bzip2 file.
+
 ### Build for FreeBSD, OpenBSD or DragonFly
 
 To use `gettext` with `mo` files then need to add the following
@@ -114,3 +124,10 @@ Pass both `gcc` compiler and directory for the GNU gettext `mo` files.
 ```
 $ CC=gcc make CFLAGS="-Wall -Werror -m32 -DEDLIN_BINDTEXTDOMAIN=\"\\\"/usr/share/locale\\\"\""
 ```
+### Build for Arch Linux
+
+Build with the [PKGBUILD](misc/pacman/PKGBUILD) file.
+
+### Build for Alpine
+
+Build with the [APKBUILD](misc/alpine/APKBUILD) file.
