@@ -9,14 +9,14 @@ LANGLIST=de en es fr it
 dist: $(APPNAME) readutf8
 	pkg/$$(uname)
 
-$(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c config.h
-	$(CC) -I. -Isrc -DHAVE_CONFIG_H src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c -o $@ $(CFLAGS)
+$(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c config.h posix/codepage.c
+	$(CC) -I. -Isrc -DHAVE_CONFIG_H src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c posix/codepage.c -o $@ $(CFLAGS)
 
 config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
 
-readutf8: src/readutf8.c
-	$(CC) -o $@ src/readutf8.c src/mbcs.c -Isrc -DMBCS_LOOKUP $(CFLAGS)
+readutf8: src/readutf8.c posix/codepage.c src/mbcs.c
+	$(CC) -o $@ src/readutf8.c src/mbcs.c posix/codepage.c -Isrc -DMBCS_LOOKUP $(CFLAGS)
 
 clean:
 	rm -rf $(APPNAME) *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat *.gz *.mo readutf8

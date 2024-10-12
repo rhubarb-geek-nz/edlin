@@ -11,3 +11,4 @@
 int mbcsLen(unsigned int cp, const unsigned char* p, size_t avail);
 wchar_t mbcsToChar(unsigned int cp, const unsigned char* p, int len);
 int mbcsFromChar(unsigned int cp, wchar_t ch, unsigned char* p);
+unsigned int mbcsCodePage(void);

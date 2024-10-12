@@ -14,8 +14,6 @@
 #		define INCL_DOSNLS
 #		define INCL_DOSMISC
 #		include <os2.h>
-#	else
-#		include <dos.h>
 #	endif
 #endif
 
@@ -347,48 +345,12 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
+	fileCodePage = mbcsCodePage();
 
-#ifdef _WIN32
-	fileCodePage = GetACP();
-#else
-	fileCodePage = 437;
-#	ifdef __OS2__
-#		ifdef M_I386
-	{
-		ULONG codePages[8];
-		ULONG dataLength = _countof(codePages);
-		if (!DosQueryCp(sizeof(codePages), codePages, &dataLength))
-		{
-			fileCodePage = codePages[0];
-		}
-	}
-#		else
-	{
-		USHORT codePages[8];
-		USHORT dataLength = _countof(codePages);
-		if (!DosGetCp(sizeof(codePages), codePages, &dataLength))
-		{
-			fileCodePage = codePages[0];
-		}
-	}
-#		endif
+#ifdef __OS2__
 	edlinLoadString(EDLMES_YY, messageYY, sizeof(messageYY), "Yy");
 	edlinLoadString(EDLMES_NN, messageNN, sizeof(messageNN), "Nn");
 	edlinLoadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), "*");
-#	else
-	{
-		union REGS in_regs, out_regs;
-		memset(&in_regs, 0, sizeof(in_regs));
-		memset(&out_regs, 0, sizeof(out_regs));
-		in_regs.h.ah = 0x66;
-		in_regs.h.al = 1;
-		intdos(&in_regs, &out_regs);
-		if (out_regs.w.bx && !out_regs.w.cflag)
-		{
-			fileCodePage = out_regs.w.bx;
-		}
-	}
-#	endif
 #endif
 
 	atexit(exitHandler);

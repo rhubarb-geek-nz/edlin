@@ -2,9 +2,9 @@
 # Licensed under the MIT License.
 
 CFLAGS=-I..\src -d0 -DHAVE_UNISTD_H -DWIN32_LEAN_AND_MEAN -DEDLIN_DOSFILESYSTEM
-SRCFILES=..\src\edlin.c ..\src\readline.c ..\src\mbcs.c eddos.c
+SRCFILES=..\src\edlin.c ..\src\readline.c ..\src\mbcs.c eddos.c codepage.c
 HDRFILES=..\src\edlin.h ..\src\readline.h ..\src\mbcs.h
-READFILES=..\src\mbcs.c ..\src\readutf8.c
+READFILES=..\src\mbcs.c ..\src\readutf8.c codepage.c
 
 all: edlin.exe edlin.com 286\edlin.exe 386\edlin.exe 286\readutf8.exe 386\readutf8.exe readutf8.exe
 
