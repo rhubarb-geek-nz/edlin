@@ -6,18 +6,17 @@ SRCFILES=..\src\edlin.c ..\src\readline.c ..\src\mbcs.c eddos.c
 HDRFILES=..\src\edlin.h ..\src\readline.h ..\src\mbcs.h
 READFILES=..\src\mbcs.c ..\src\readutf8.c
 
-all: edlin.exe edlin.com 286\edlin.exe 386\edlin.exe 286\readutf8.exe 386\readutf8.exe
+all: edlin.exe edlin.com 286\edlin.exe 386\edlin.exe 286\readutf8.exe 386\readutf8.exe readutf8.exe
 
 clean: .SYMBOLIC
 	if exist *.err del *.err
 	if exist edlin*.msg del edlin*.msg
 	if exist edlin*.txt del edlin*.txt
 	if exist edlin.exe del edlin.exe
+	if exist readutf8.exe del readutf8.exe
 	if exist edlin.com del edlin.com
-	if exist 286\edlin.exe del 286\edlin.exe
-	if exist 386\edlin.exe del 386\edlin.exe
-	if exist 286\readutf8.exe del 286\readutf8.exe
-	if exist 386\readutf8.exe del 386\readutf8.exe
+	if exist 286\*.exe del 286\*.exe
+	if exist 386\*.exe del 386\*.exe
 	if exist 286 rmdir 286
 	if exist 386 rmdir 386
 
@@ -28,6 +27,11 @@ edlin.com: $(SRCFILES) $(HDRFILES)
 
 edlin.exe: $(SRCFILES) $(HDRFILES)
 	wcl.exe -0 -bcl=dos -fpc $(SRCFILES) -fe=$@ $(CFLAGS) -DEDLIN_MALLOC=0x8000
+	del *.obj
+	if exist *.err exit 1
+
+readutf8.exe: $(READFILES) $(HDRFILES)
+	wcl.exe -0 -bcl=dos -fpc $(READFILES) -fe=$@ $(CFLAGS) -DMBCS_LOOKUP
 	del *.obj
 	if exist *.err exit 1
 

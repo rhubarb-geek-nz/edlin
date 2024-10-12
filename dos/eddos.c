@@ -9,12 +9,14 @@
 
 #ifdef _WIN32
 #	include <windows.h>
-#endif
-
-#ifdef __OS2__
-#	define INCL_DOSNLS
-#	define INCL_DOSMISC
-#	include <os2.h>
+#else
+#	ifdef __OS2__
+#		define INCL_DOSNLS
+#		define INCL_DOSMISC
+#		include <os2.h>
+#	else
+#		include <dos.h>
+#	endif
 #endif
 
 #include <stdio.h>
@@ -350,10 +352,8 @@ int main(int argc, char** argv)
 	fileCodePage = GetACP();
 #else
 	fileCodePage = 437;
-#endif
-
-#ifdef __OS2__
-#	ifdef M_I386
+#	ifdef __OS2__
+#		ifdef M_I386
 	{
 		ULONG codePages[8];
 		ULONG dataLength = _countof(codePages);
@@ -362,7 +362,7 @@ int main(int argc, char** argv)
 			fileCodePage = codePages[0];
 		}
 	}
-#	else
+#		else
 	{
 		USHORT codePages[8];
 		USHORT dataLength = _countof(codePages);
@@ -371,10 +371,24 @@ int main(int argc, char** argv)
 			fileCodePage = codePages[0];
 		}
 	}
-#	endif
+#		endif
 	edlinLoadString(EDLMES_YY, messageYY, sizeof(messageYY), "Yy");
 	edlinLoadString(EDLMES_NN, messageNN, sizeof(messageNN), "Nn");
 	edlinLoadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), "*");
+#	else
+	{
+		union REGS in_regs, out_regs;
+		memset(&in_regs, 0, sizeof(in_regs));
+		memset(&out_regs, 0, sizeof(out_regs));
+		in_regs.h.ah = 0x66;
+		in_regs.h.al = 1;
+		intdos(&in_regs, &out_regs);
+		if (out_regs.w.bx && !out_regs.w.cflag)
+		{
+			fileCodePage = out_regs.w.bx;
+		}
+	}
+#	endif
 #endif
 
 	atexit(exitHandler);

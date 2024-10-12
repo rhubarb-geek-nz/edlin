@@ -12,19 +12,23 @@
 #	include <os2.h>
 #endif
 
+#ifdef __DOS__
+#	include <dos.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
-#if !defined(_WIN32) && !defined(__OS2__)
+#if !defined(_WIN32) && !defined(__OS2__) && !defined(__DOS__)
 #	include <locale.h>
 #	include <langinfo.h>
 #endif
 
 #include <mbcs.h>
 
-#if !defined(_WIN32) && !defined(__OS2__)
+#if !defined(_WIN32) && !defined(__OS2__) && !defined(__DOS__)
 static struct
 {
 	unsigned int codePage;
@@ -54,9 +58,10 @@ int main(int argc, char **argv)
 		}
 	}
 #else
-#	ifdef __OS2__
+#	if defined(__OS2__) || defined(__DOS__)
 	unsigned int codePage = 437;
-#		ifdef M_I386
+#		ifdef __OS2__
+#			ifdef M_I386
 	{
 		ULONG codePages[8];
 		ULONG dataLength = 8;
@@ -65,7 +70,7 @@ int main(int argc, char **argv)
 			codePage = codePages[0];
 		}
 	}
-#		else
+#			else
 	{
 		USHORT codePages[8];
 		USHORT dataLength = 8;
@@ -73,6 +78,18 @@ int main(int argc, char **argv)
 		{
 			codePage = codePages[0];
 		}
+	}
+#			endif
+#		else
+	union REGS in_regs, out_regs;
+	memset(&in_regs, 0, sizeof(in_regs));
+	memset(&out_regs, 0, sizeof(out_regs));
+	in_regs.h.ah = 0x66;
+	in_regs.h.al = 1;
+	intdos(&in_regs, &out_regs);
+	if (out_regs.w.bx && !out_regs.w.cflag)
+	{
+		codePage = out_regs.w.bx;
 	}
 #		endif
 #	else
@@ -110,7 +127,7 @@ int main(int argc, char **argv)
 	while (i < argc)
 	{
 		const char *p = argv[i++];
-		unsigned char input[1024];
+		static unsigned char input[1024];
 		FILE* fp = fopen(p, "r");
 		if (fp == NULL)
 		{
@@ -120,12 +137,12 @@ int main(int argc, char **argv)
 
 		while (fgets((char *)input, sizeof(input), fp))
 		{
-			wchar_t line[1024];
+			static wchar_t line[1024];
 			int off = 0;
 			int len = (int)strlen((char *)input);
 			int lineLen = 0;
 			int outLen = 0;
-			unsigned char output[1024];
+			static unsigned char output[1024];
 
 			while ((off < len) && (input[off] != '\n'))
 			{
