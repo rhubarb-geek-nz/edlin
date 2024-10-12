@@ -35,7 +35,7 @@ then
 		msgfmt -o "$PKGROOT/share/locale/$d/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$d.po"
 	done
 else
-	while read d e
+	for d in de en es fr it
 	do
 		locale -a | grep "^$d"_  | grep ".ISO8859-1\$" | while read L
 		do
@@ -47,21 +47,7 @@ else
 				rm "edlin-$d.msg"
 			fi
 		done
-		locale -a | grep "^$e.UTF-8\$" | while read L
-		do
-			if test ! -d  "$PKGROOT/lib/locale/$L/LC_MESSAGES"
-			then
-				mkdir -p "$PKGROOT/lib/locale/$L/LC_MESSAGES"
-				LANG="$L" gencat "$PKGROOT/lib/locale/$L/LC_MESSAGES/edlin" "posix/nls/edlin-$d.msg"
-			fi
-		done
-	done << EOF
-de de_DE
-en en_US
-es es_ES
-fr fr_FR
-it it_IT
-EOF
+	done
 fi
 
 if file edlin | grep " AMD64 "
