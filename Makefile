@@ -6,7 +6,7 @@ all: dist
 APPNAME=edlin
 LANGLIST=de en es fr it
 
-dist: $(APPNAME)
+dist: $(APPNAME) readutf8
 	pkg/$$(uname)
 
 $(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c config.h
@@ -15,8 +15,11 @@ $(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c config.h
 config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
 
+readutf8: src/readutf8.c
+	$(CC) -o $@ src/readutf8.c src/mbcs.c -Isrc $(CFLAGS)
+
 clean:
-	rm -rf $(APPNAME) *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat *.gz *.mo
+	rm -rf $(APPNAME) *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat *.gz *.mo readutf8
 
 $(APPNAME).cat:
 	for d in $(LANGLIST); do gencat $(APPNAME)-$$d.cat posix/nls/$(APPNAME)-$$d.msg; done

@@ -23,7 +23,7 @@
 #include "readline.h"
 #include "mbcs.h"
 
-unsigned int fileCodePage, consoleCodePage;
+unsigned int fileCodePage;
 unsigned char insertMode;
 size_t contentLow, contentHigh, contentLength, currentLine, contentLowCount, contentHighCount;
 unsigned char* contentStore;

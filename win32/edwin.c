@@ -561,22 +561,6 @@ int main(int argc, char** argv)
 		}
 	}
 
-	if (bStdOutConsole)
-	{
-		consoleCodePage = GetConsoleOutputCP();
-
-		switch (consoleCodePage)
-		{
-		case CP_ACP:
-			consoleCodePage = fileCodePage;
-			break;
-		}
-	}
-	else
-	{
-		consoleCodePage = fileCodePage;
-	}
-
 	atexit(exitHandler);
 
 	{

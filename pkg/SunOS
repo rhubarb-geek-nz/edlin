@@ -2,14 +2,6 @@
 # Copyright (c) 2024 Roger Brown.
 # Licensed under the MIT License.
 
-if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
-then
-	:
-else
-	echo >&2 Should be using GNU gettext
-	false
-fi
-
 VERSION=$( . ./version ; echo $VERSION )
 PWD=$(pwd)
 APPNAME=edlin
@@ -35,11 +27,42 @@ mkdir -p "$PKGROOT/bin" "$PKGROOT/share/man/man1" "$PKGTMP"
 cp "$APPNAME" "$PKGROOT/bin"
 cp "$APPNAME.1" "$PKGROOT/share/man/man1"
 
-for d in de en es fr it
-do
-	mkdir -p "$PKGROOT/share/locale/$d/LC_MESSAGES"
-	msgfmt -o "$PKGROOT/share/locale/$d/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$d.po"
-done
+if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
+then
+	for d in de en es fr it
+	do
+		mkdir -p "$PKGROOT/share/locale/$d/LC_MESSAGES"
+		msgfmt -o "$PKGROOT/share/locale/$d/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$d.po"
+	done
+else
+	while read d e
+	do
+		locale -a | grep "^$d"_  | grep ".ISO8859-1\$" | while read L
+		do
+			if test ! -d  "$PKGROOT/lib/locale/$d/LC_MESSAGES"
+			then
+				mkdir -p "$PKGROOT/lib/locale/$d/LC_MESSAGES"
+				LANG="$L" ./readutf8 "posix/nls/edlin-$d.msg" | grep -v "codeset=utf-8" > "edlin-$d.msg"
+				LANG="$L" gencat "$PKGROOT/lib/locale/$d/LC_MESSAGES/edlin" "edlin-$d.msg"
+				rm "edlin-$d.msg"
+			fi
+		done
+		locale -a | grep "^$e.UTF-8\$" | while read L
+		do
+			if test ! -d  "$PKGROOT/lib/locale/$L/LC_MESSAGES"
+			then
+				mkdir -p "$PKGROOT/lib/locale/$L/LC_MESSAGES"
+				LANG="$L" gencat "$PKGROOT/lib/locale/$L/LC_MESSAGES/edlin" "posix/nls/edlin-$d.msg"
+			fi
+		done
+	done << EOF
+de de_DE
+en en_US
+es es_ES
+fr fr_FR
+it it_IT
+EOF
+fi
 
 if file edlin | grep " AMD64 "
 then
@@ -63,13 +86,29 @@ rm -rf "$PKGFILE"
 
 (
 	echo i pkginfo
-	echo f none "bin/$APPNAME" 0755 root root
-	echo f none "share/man/man1/$APPNAME.1" 0444 root root
+	echo d none "bin" 0755 root bin
+	echo f none "bin/$APPNAME" 0755 root bin
+	echo d none "share" 0755 root sys
+	echo d none "share/man" 0755 root bin
+	echo d none "share/man/man1" 0755 root bin
+	echo f none "share/man/man1/$APPNAME.1" 0444 root bin
 	(
 		cd "$PKGROOT"
+		find share/locale -type d | while read N
+		do
+			echo d none "$N" 0755 root other
+		done
 		find share/locale -type f -name edlin.mo | while read N
 		do
-			echo f none "$N" 0444 root root
+			echo f none "$N" 0444 root other
+		done
+		find lib -type d | while read N
+		do
+			echo d none "$N" 0755 root bin
+		done
+		find lib -type f -name edlin | while read N
+		do
+			echo f none "$N" 0444 root bin
 		done
 	)
 ) >"$INTDIR/prototype"

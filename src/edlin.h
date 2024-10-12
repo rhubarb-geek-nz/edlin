@@ -18,7 +18,7 @@
 #	define strcpy_s(a,b,c)		strncpy(a,c,b)
 #endif
 
-extern unsigned int consoleCodePage, fileCodePage;
+extern unsigned int fileCodePage;
 extern unsigned char insertMode;
 
 /************************************

@@ -16,7 +16,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+
+#if !defined(_WIN32) && !defined(__OS2__)
+#	include <locale.h>
+#	include <langinfo.h>
+#endif
+
 #include <mbcs.h>
+
+#if !defined(_WIN32) && !defined(__OS2__)
+static struct
+{
+	unsigned int codePage;
+	const char *name;
+} codePageMap[] = {
+	{ CP_UTF8,"UTF-8" },
+	{ 850,"ISO8859-1" },
+	{ 28605,"ISO8859-15" }
+};
+#endif
 
 int main(int argc, char **argv)
 {
@@ -35,11 +53,10 @@ int main(int argc, char **argv)
 			codePage = GetACP();
 		}
 	}
-#endif
-
-#ifdef __OS2__
+#else
+#	ifdef __OS2__
 	unsigned int codePage = 437;
-#	ifdef M_I386
+#		ifdef M_I386
 	{
 		ULONG codePages[8];
 		ULONG dataLength = 8;
@@ -48,7 +65,7 @@ int main(int argc, char **argv)
 			codePage = codePages[0];
 		}
 	}
-#	else
+#		else
 	{
 		USHORT codePages[8];
 		USHORT dataLength = 8;
@@ -57,13 +74,43 @@ int main(int argc, char **argv)
 			codePage = codePages[0];
 		}
 	}
+#		endif
+#	else
+	const char *cp;
+	unsigned int codePage = 646;
+	setlocale(LC_ALL, "");
+
+	cp = nl_langinfo(CODESET);
+
+	if (cp)
+	{
+		int i = sizeof(codePageMap) / sizeof(codePageMap[0]);
+		int k = strlen(cp);
+		char buf[32];
+
+		if ((k > 4) && (k < sizeof(buf)) && !memcmp(cp, "ISO-", 4))
+		{
+			memcpy(buf, cp, 3);
+			memcpy(buf+3, cp + 4, k - 3);
+			cp = buf;
+		}
+
+		while (i--)
+		{
+			if (!strcmp(cp,codePageMap[i].name))
+			{
+				codePage = codePageMap[i].codePage;
+				break;
+			}
+		}
+	}
 #	endif
 #endif
 
 	while (i < argc)
 	{
-		const char* p = argv[i++];
-		char input[1024];
+		const char *p = argv[i++];
+		unsigned char input[1024];
 		FILE* fp = fopen(p, "r");
 		if (fp == NULL)
 		{
@@ -71,14 +118,14 @@ int main(int argc, char **argv)
 			return 1;
 		}
 
-		while (fgets(input, sizeof(input), fp))
+		while (fgets((char *)input, sizeof(input), fp))
 		{
 			wchar_t line[1024];
 			int off = 0;
-			int len = (int)strlen(input);
+			int len = (int)strlen((char *)input);
 			int lineLen = 0;
 			int outLen = 0;
-			char output[1024];
+			unsigned char output[1024];
 
 			while ((off < len) && (input[off] != '\n'))
 			{
