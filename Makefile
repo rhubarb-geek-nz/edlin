@@ -15,7 +15,7 @@ $(APPNAME): src/$(APPNAME).c src/mbcs.c src/readline.c posix/edposix.c config.h 
 config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
 
-readutf8: src/readutf8.c posix/codepage.c src/mbcs.c
+readutf8: src/readutf8.c posix/codepage.c src/mbcs.c config.h
 	$(CC) -o $@ src/readutf8.c src/mbcs.c posix/codepage.c -I. -Isrc -DMBCS_LOOKUP -DHAVE_CONFIG_H $(CFLAGS)
 
 clean:
