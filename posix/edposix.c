@@ -24,6 +24,7 @@
 #include "mbcs.h"
 #include "readline.h"
 #include "edlmes.h"
+#include "edlmesen.h"
 
 static struct termios ttyAttr;
 static int restoreAttr;
@@ -274,23 +275,25 @@ int edlinPrintLine(const unsigned char* p, size_t len)
 	return rc;
 }
 
+#define EDLMESEN_MAP(x)    { EDLMES_##x, EDLMESEN_##x }
+
 static struct
 {
 	int id;
 	const char *text;
 } edlmes[]={
-    { EDLMES_EOF, "End of input file\r\n" },
-    { EDLMES_QMES, "Abort edit (Y/N)? " },
-    { EDLMES_BADCOM, "Entry error\r\n" },
-    { EDLMES_ESCAPE, "\\\r\n" },
-    { EDLMES_CTRLC, "^C\r\n\r\n" },
-    { EDLMES_NDNAME, "File name must be specified\r\n" },
-    { EDLMES_NOSUCH, "Not found.\r\n" },
-    { EDLMES_ASK, "O.K.? " },
-    { EDLMES_MRGERR, "Not enough room to merge the entire file\r\n" },
-    { EDLMES_MEMFUL, "Insufficient memory\r\n" },
-    { EDLMES_TOOLNG, "Line too long\r\n" },
-    { EDLMES_NEWFIL, "New file\r\n" }
+    EDLMESEN_MAP(EOF),
+    EDLMESEN_MAP(QMES),
+    EDLMESEN_MAP(BADCOM),
+    EDLMESEN_MAP(ESCAPE),
+    EDLMESEN_MAP(CTRLC),
+    EDLMESEN_MAP(NDNAME),
+    EDLMESEN_MAP(NOSUCH),
+    EDLMESEN_MAP(ASK),
+    EDLMESEN_MAP(MRGERR),
+    EDLMESEN_MAP(MEMFUL),
+    EDLMESEN_MAP(TOOLNG),
+    EDLMESEN_MAP(NEWFIL)
 };
 
 const char *edlinGetMessage(int message)
@@ -404,9 +407,9 @@ int main(int argc, char** argv)
 #	endif
 #endif
 
-	loadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), "*");
-	loadString(EDLMES_NN, messageNN, sizeof(messageNN), "Nn");
-	loadString(EDLMES_YY, messageYY, sizeof(messageYY), "Yy");
+	loadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), EDLMESEN_PROMPT);
+	loadString(EDLMES_NN, messageNN, sizeof(messageNN), EDLMESEN_NN);
+	loadString(EDLMES_YY, messageYY, sizeof(messageYY), EDLMESEN_YY);
 
 	return edMainLoop(argc, argv);
 }

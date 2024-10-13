@@ -30,6 +30,7 @@
 #include "mbcs.h"
 #include "readline.h"
 #include "edlmes.h"
+#include "edlmesen.h"
 
 #ifdef __OS2__
 static const char *messageFile = "EDLIN.MSG";
@@ -37,9 +38,9 @@ static char messageYY[32];
 static char messageNN[32];
 static char messagePrompt[32];
 #else
-static const char * messageYY = "Yy";
-static const char * messageNN = "Nn";
-static const char * messagePrompt = "*";
+static const char * messageYY = EDLMESEN_YY;
+static const char * messageNN = EDLMESEN_NN;
+static const char * messagePrompt = EDLMESEN_PROMPT;
 #endif
 
 static int isTTY;
@@ -185,23 +186,25 @@ int edlinPrintLine(const unsigned char* p, size_t len)
 	return rc;
 }
 
+#define EDLMESEN_MAP(x)    { EDLMES_##x, EDLMESEN_##x }
+
 static struct
 {
 	int id;
 	const char *text;
 } edlmes[]={
-    { EDLMES_EOF, "End of input file\r\n" },
-    { EDLMES_QMES, "Abort edit (Y/N)? " },
-    { EDLMES_BADCOM, "Entry error\r\n" },
-    { EDLMES_ESCAPE, "\\\r\n" },
-    { EDLMES_CTRLC, "^C\r\n\r\n" },
-    { EDLMES_NDNAME, "File name must be specified\r\n" },
-    { EDLMES_NOSUCH, "Not found.\r\n" },
-    { EDLMES_ASK, "O.K.? " },
-    { EDLMES_MRGERR, "Not enough room to merge the entire file\r\n" },
-    { EDLMES_MEMFUL, "Insufficient memory\r\n" },
-    { EDLMES_TOOLNG, "Line too long\r\n" },
-    { EDLMES_NEWFIL, "New file\r\n" }
+    EDLMESEN_MAP(EOF),
+    EDLMESEN_MAP(QMES),
+    EDLMESEN_MAP(BADCOM),
+    EDLMESEN_MAP(ESCAPE),
+    EDLMESEN_MAP(CTRLC),
+    EDLMESEN_MAP(NDNAME),
+    EDLMESEN_MAP(NOSUCH),
+    EDLMESEN_MAP(ASK),
+    EDLMESEN_MAP(MRGERR),
+    EDLMESEN_MAP(MEMFUL),
+    EDLMESEN_MAP(TOOLNG),
+    EDLMESEN_MAP(NEWFIL)
 };
 
 const char *edlinGetMessage(int message)
@@ -348,9 +351,9 @@ int main(int argc, char** argv)
 	fileCodePage = mbcsCodePage();
 
 #ifdef __OS2__
-	edlinLoadString(EDLMES_YY, messageYY, sizeof(messageYY), "Yy");
-	edlinLoadString(EDLMES_NN, messageNN, sizeof(messageNN), "Nn");
-	edlinLoadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), "*");
+	edlinLoadString(EDLMES_YY, messageYY, sizeof(messageYY), EDLMESEN_YY);
+	edlinLoadString(EDLMES_NN, messageNN, sizeof(messageNN), EDLMESEN_NN);
+	edlinLoadString(EDLMES_PROMPT, messagePrompt, sizeof(messagePrompt), EDLMESEN_PROMPT);
 #endif
 
 	atexit(exitHandler);

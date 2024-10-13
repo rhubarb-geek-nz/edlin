@@ -29,6 +29,8 @@ if (hModule == IntPtr.Zero)
 
 try
 {
+    new ValueGenerator(hModule, 9, "src", "h").GenerateFile(dir);
+
     foreach (UInt16 lang in new LanguageEnumerator(hModule))
     {
         new OS2MessageFile(hModule, lang, "dos", "txt").GenerateFile(dir);

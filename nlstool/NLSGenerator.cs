@@ -42,14 +42,17 @@ namespace nlstool
             this.ext = ext;
         }
 
-        internal void GenerateFile(string dir)
+        protected virtual string GetFilePath(string dir)
         {
             string langName = GetLanguageName(lang).Split('-')[0];
             string path = Path.Combine(dir, os);
             path = Path.Combine(path, "nls");
-            path = Path.Combine(path, $"edlin-{langName}.{ext}");
+            return Path.Combine(path, $"edlin-{langName}.{ext}");
+        }
 
-            outputFile = File.CreateText(path);
+        internal void GenerateFile(string dir)
+        {
+            outputFile = File.CreateText(GetFilePath(dir));
 
             try
             {
