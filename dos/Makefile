@@ -35,8 +35,8 @@ readutf8.exe: $(READFILES) $(HDRFILES)
 	del *.obj
 	if exist *.err exit 1
 
-286\edlin.exe: $(SRCFILES) $(HDRFILES) 286
-	wcl.exe -2 -bcl=os2 -lp $(SRCFILES) -fe=$@ $(CFLAGS) -I$(%WATCOM)\h\os21x -DEDLIN_MALLOC=0x8000
+286\edlin.exe: $(SRCFILES) $(HDRFILES) edlin.exe edlin.def 286
+	wcl.exe -2 -bcl=os2 -lp $(SRCFILES) -fe=$@ $(CFLAGS) -I$(%WATCOM)\h\os21x -DEDLIN_MALLOC=0x8000 @edlin.def
 	del *.obj
 	if exist *.err exit 1
 
