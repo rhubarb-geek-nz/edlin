@@ -372,8 +372,6 @@ static void loadString(int message, char *str, size_t len, const char *p)
 
 int main(int argc, char** argv)
 {
-	const char *p;
-
 	if (isatty(0))
 	{
 		struct termios attr;
