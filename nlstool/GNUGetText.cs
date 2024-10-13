@@ -16,7 +16,7 @@ namespace nlstool
             WritePrompt("msgid", string.Empty);
             WritePrompt("msgstr", string.Empty);
             WriteLine(QuoteString("Content-Type: text/plain; charset=UTF-8\n"));
-            for (int id = 1000; id <= 1014; id++)
+            foreach (int id in new EnumEnumerator(typeof(EDLMES)))
             {
                 EDLMES e = (EDLMES)id;
                 WriteLine($"# {id}, {e.GetType().Name}_{e}");

@@ -40,7 +40,7 @@ namespace nlstool
             WriteLine("; Copyright (c) 2024 Roger Brown.");
             WriteLine("; Licensed under the MIT License.");
             WriteLine("EDL");
-            for (int id = 1000; id <= 1014; id++)
+            foreach (int id in new EnumEnumerator(typeof(EDLMES)))
             {
                 char c = MessageType((EDLMES)id);
                 string s = LoadString(id, lang);

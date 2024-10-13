@@ -15,6 +15,9 @@ string arch = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitect
 string dir = "..\\..\\..\\..";
 string ExePath = dir + "\\" + arch + "\\" + configuration + "\\edlin.exe";
 string pwd = Environment.CurrentDirectory;
+
+new HeaderGenerator("src", "h").GenerateFile(dir);
+
 var file = File.GetAttributes(ExePath);
 
 IntPtr hModule = NLSGenerator.LoadLibrary(ExePath);

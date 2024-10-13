@@ -10,8 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <termios.h>
 #include <locale.h>
 #ifdef HAVE_LANGINFO_H
 #	include <langinfo.h>

@@ -16,7 +16,7 @@ namespace nlstool
             WriteLine("$ codeset=utf-8");
             WriteLine("$quote \"");
             WriteLine("$set 1");
-            for (int id = 1000; id <= 1014; id++)
+            foreach (int id in new EnumEnumerator(typeof(EDLMES)))
             {
                 string str = LoadString(id, lang);
                 str = QuoteString(str);
