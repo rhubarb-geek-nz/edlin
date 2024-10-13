@@ -16,7 +16,7 @@ config.h: configure
 	CFLAGS="$(CFLAGS)" ./configure
 
 readutf8: src/readutf8.c posix/codepage.c src/mbcs.c
-	$(CC) -o $@ src/readutf8.c src/mbcs.c posix/codepage.c -Isrc -DMBCS_LOOKUP $(CFLAGS)
+	$(CC) -o $@ src/readutf8.c src/mbcs.c posix/codepage.c -I. -Isrc -DMBCS_LOOKUP -DHAVE_CONFIG_H $(CFLAGS)
 
 clean:
 	rm -rf $(APPNAME) *.pkg *.deb *.rpm *.tgz *.txz *.pub *.ipk *.qpr *.hpkg config.h *.cat *.gz *.mo readutf8

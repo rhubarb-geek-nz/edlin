@@ -13,9 +13,12 @@
 #include <unistd.h>
 #include <termios.h>
 #include <locale.h>
-#include <langinfo.h>
+#ifdef HAVE_LANGINFO_H
+#	include <langinfo.h>
+#endif
 #include "mbcs.h"
 
+#ifdef HAVE_LANGINFO_H
 static struct
 {
 	unsigned int codePage;
@@ -25,14 +28,18 @@ static struct
 	{ 850,"ISO8859-1" },
 	{ 28605,"ISO8859-15" }
 };
+#endif
 
 unsigned int mbcsCodePage(void)
 {
 	unsigned int codePage = 646;
+#ifdef HAVE_LANGINFO_H
 	const char *p;
+#endif
 
 	setlocale(LC_ALL, "");
 
+#ifdef HAVE_LANGINFO_H
 	p = nl_langinfo(CODESET);
 
 	if (p)
@@ -57,6 +64,7 @@ unsigned int mbcsCodePage(void)
 			}
 		}
 	}
+#endif
 
 	return codePage;
 }

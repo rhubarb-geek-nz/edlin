@@ -13,7 +13,6 @@
 #include <unistd.h>
 #include <termios.h>
 #include <locale.h>
-#include <langinfo.h>
 #ifdef HAVE_LIBINTL_H
 #	include <libintl.h>
 #else
