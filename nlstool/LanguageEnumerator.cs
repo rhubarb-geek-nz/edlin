@@ -11,7 +11,7 @@ namespace nlstool
     {
         internal LanguageEnumerator(IntPtr hModule)
         {
-            EnumResourceLanguagesW(hModule, 6, 1 + (1000 >> 4), EnumResLangProc, 0);
+            EnumResourceLanguagesW(hModule, 6, 1 + ((int)EDLMES.EOF >> 4), EnumResLangProc, 0);
         }
 
         private int EnumResLangProc(nint hModule, nint lpType, nint lpName, ushort wLanguage, nint lParam)
