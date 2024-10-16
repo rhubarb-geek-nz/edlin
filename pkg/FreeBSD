@@ -2,16 +2,21 @@
 # Copyright (c) 2024 Roger Brown.
 # Licensed under the MIT License.
 
-if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
-then
-	:
-else
-	echo >&2 Should be using GNU gettext
-	false
-fi
-
 VERSION=$( . ./version ; echo $VERSION )
 PKGNAME=edlin
+ISMSGFMT=false
+ISGENCAT=false
+PREFIX=/usr/local
+
+if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
+then
+	ISMSGFMT=true
+else
+	if grep '^#define HAVE_NL_TYPES_H 1$' config.h > /dev/null
+	then
+		ISGENCAT=true
+	fi
+fi
 
 cleanup()
 {
@@ -22,17 +27,30 @@ trap cleanup 0
 
 cleanup
 
-mkdir -p root/usr/local/bin root/usr/local/share/man/man1
+mkdir -p root$PREFIX/bin root$PREFIX/share/man/man1
 
-cp edlin root/usr/local/bin
-strip root/usr/local/bin/edlin
-gzip < edlin.1 > root/usr/local/share/man/man1/edlin.1.gz
+cp edlin root$PREFIX/bin
+strip root$PREFIX/bin/edlin
+gzip < edlin.1 > root$PREFIX/share/man/man1/edlin.1.gz
 
-for A in de en es fr it
-do
-	mkdir -p "root/usr/local/share/locale/$A/LC_MESSAGES"
-	msgfmt -o "root/usr/local/share/locale/$A/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$A.po"
-done
+if $ISMSGFMT
+then
+	for A in de en es fr it
+	do
+		mkdir -p "root$PREFIX/share/locale/$A/LC_MESSAGES"
+		msgfmt -o "root$PREFIX/share/locale/$A/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$A.po"
+	done
+fi
+
+if $ISGENCAT
+then
+	for d in de_DE es_ES fr_FR it_IT
+	do
+		SHORT=$(echo $d | sed y/_/\ / | while read A B; do echo $A; done )
+		mkdir -p "root$PREFIX/share/nls/$d.UTF-8"
+		gencat "root$PREFIX/share/nls/$d.UTF-8/edlin.cat" "posix/nls/edlin-$SHORT.msg"
+	done
+fi
 
 cat > MANIFEST <<EOF
 name $PKGNAME
@@ -42,13 +60,13 @@ www https://github.com/rhubarb-geek-nz/edlin
 origin editors/edlin
 comment Text Editor based on MS-DOS edlin
 maintainer rhubarb-geek-nz@users.sourceforge.net
-prefix /usr/local
+prefix $PREFIX
 EOF
 
 (
 	echo bin/edlin
-	cd root/usr/local
-	find share -type f -name "edlin.*"
+	cd root$PREFIX
+	find share -type f -name "edlin*"
 ) > PLIST
 
 pkg create -M MANIFEST -o . -r root -v -p PLIST

@@ -71,3 +71,12 @@ if $CC a.c $CFLAGS
 then
 	echo "#define HAVE_LANGINFO_H 1" >> config.h
 fi
+
+cat > a.c << EOF
+#include <locale.h>
+int main(int argc,char **argv) { uselocale((locale_t)0); return 0; }
+EOF
+if $CC a.c $CFLAGS
+then
+	echo "#define HAVE_USELOCALE 1" >> config.h
+fi

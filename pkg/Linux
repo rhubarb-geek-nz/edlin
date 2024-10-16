@@ -2,14 +2,6 @@
 # Copyright (c) 2024 Roger Brown.
 # Licensed under the MIT License.
 
-if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
-then
-	:
-else
-	echo >&2 Should be using GNU gettext
-	false
-fi
-
 cleanup()
 {
 	rm -rf data rpms rpm.spec
@@ -29,6 +21,17 @@ ISDEB=false
 ISIPK=false
 ISTERMUX=false
 ISMSGFMT=false
+ISGENCAT=false
+
+if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
+then
+	ISMSGFMT=true
+else
+	if grep '^#define HAVE_NL_TYPES_H 1$' config.h > /dev/null
+	then
+		ISGENCAT=true
+	fi
+fi
 
 if test -f /etc/os-release
 then
@@ -37,15 +40,12 @@ then
 		case "$d" in
 			debian )
 				ISDEB=true
-				ISMSGFMT=true
 				;;
 			fedora | centos | rhel | mariner | suse | opensuse )
 				ISRPM=true
-				ISMSGFMT=true
 				;;
 			slackware )
 				ISSLACK=true
-				ISMSGFMT=true
 				;;
 			openwrt )
 				ISIPK=true
@@ -67,14 +67,24 @@ cp edlin data/usr/bin
 
 strip data/usr/bin/edlin
 
-for d in de en es fr it
-do
-	mkdir -p "data/usr/share/locale/$d/LC_MESSAGES"
-	if $ISMSGFMT
-	then
+if $ISMSGFMT
+then
+	for d in de en es fr it
+	do
+		mkdir -p "data/usr/share/locale/$d/LC_MESSAGES"
 		msgfmt -o "data/usr/share/locale/$d/LC_MESSAGES/$PKGNAME.mo" "posix/nls/$PKGNAME-$d.po"
-	fi
-done
+	done
+fi
+
+if $ISGENCAT
+then
+	for d in de_DE es_ES fr_FR it_IT
+	do
+		SHORT=$(echo $d | sed y/_/\ / | while read A B; do echo $A; done )
+		mkdir -p "data/usr/share/locale/$d.UTF-8/LC_MESSAGES"
+		gencat "data/usr/share/locale/$d.UTF-8/LC_MESSAGES/$PKGNAME" "posix/nls/$PKGNAME-$SHORT.msg"
+	done
+fi
 
 sed --quiet < src/edlin.c '/\*\*\*\*/,/^ \*\//p' | grep -v '\*\*\*' | grep -v '^ \*/' | while read A B
 do
@@ -176,7 +186,7 @@ EOF
 EOF
 		fi
 
-		find usr/share/locale -type f -name edlin.mo | while read N
+		find usr/share/locale -type f -name "edlin*" | while read N
 		do
 			echo "%attr(444,root,root) /$N"
 		done

@@ -352,8 +352,23 @@ int edlinPrintMessage(int message)
 
 void edlinPrintError(int err)
 {
-	const char* p = strerror(err);
-	edlinPrintLine((const unsigned char*)p, strlen(p));
+#ifdef HAVE_USELOCALE
+	locale_t locale = uselocale((locale_t)0);
+	const char *p = (locale == LC_GLOBAL_LOCALE) ? strerror(err) : strerror_l(err, locale);
+#else
+	const char *p = strerror(err);
+#endif
+
+	if (p)
+	{
+		edlinPrintLine((const unsigned char*)p, strlen(p));
+	}
+	else
+	{
+		char buf[32];
+		int i = sprintf(buf, "#%d", err);
+		edlinPrintLine((const unsigned char*)buf, i);
+	}
 }
 
 static void loadString(int message, char *str, size_t len, const char *p)

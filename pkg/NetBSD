@@ -2,16 +2,20 @@
 # Copyright (c) 2024 Roger Brown.
 # Licensed under the MIT License.
 
-if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
-then
-	:
-else
-	echo >&2 Should be using GNU gettext
-	false
-fi
-
 VERSION=$( . ./version ; echo $VERSION )
 PKGNAME="edlin-$VERSION.tgz"
+ISMSGFMT=false
+ISGENCAT=false
+
+if grep '^#define HAVE_LIBINTL_H 1$' config.h > /dev/null
+then
+	ISMSGFMT=true
+else
+	if grep '^#define HAVE_NL_TYPES_H 1$' config.h > /dev/null
+	then
+		ISGENCAT=true
+	fi
+fi
 
 cleanup()
 {
@@ -28,11 +32,24 @@ cp edlin root/usr/bin
 strip root/usr/bin/edlin
 cp edlin.1 root/usr/share/man/man1
 
-for A in de en es fr it
-do
-	mkdir -p "root/usr/share/locale/$A/LC_MESSAGES"
-	msgfmt -o "root/usr/share/locale/$A/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$A.po"
-done
+if $ISMSGFMT
+then
+	for A in de en es fr it
+	do
+		mkdir -p "root/usr/share/locale/$A/LC_MESSAGES"
+		msgfmt -o "root/usr/share/locale/$A/LC_MESSAGES/edlin.mo" "posix/nls/edlin-$A.po"
+	done
+fi
+
+if $ISGENCAT
+then
+	for d in de_DE es_ES fr_FR it_IT
+	do
+		SHORT=$(echo $d | sed y/_/\ / | while read A B; do echo $A; done )
+		mkdir -p "root/usr/share/nls/$d.UTF-8"
+		gencat "root/usr/share/nls/$d.UTF-8/edlin.cat" "posix/nls/edlin-$SHORT.msg"
+	done
+fi
 
 (
 	echo HOMEPAGE=https://github.com/rhubarb-geek-nz/edlin

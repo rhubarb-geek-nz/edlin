@@ -114,7 +114,7 @@ $ make CFLAGS="-Wall -Werror -I/usr/local/include -L/usr/local/lib -lintl"
 To use `gettext` with `mo` files then need to add the following
 
 ```
-make CFLAGS="-Wall -Werror -lintl"
+$ make CFLAGS="-Wall -Werror -lintl"
 ```
 
 ### Build for Solaris
