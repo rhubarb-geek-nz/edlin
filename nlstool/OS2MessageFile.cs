@@ -29,6 +29,8 @@ namespace nlstool
                 case EDLMES.MEMFUL:
                 case EDLMES.MRGERR:
                 case EDLMES.TOOLNG:
+                case EDLMES.DEST:
+                case EDLMES.NOBAK:
                     return 'E';
             }
 

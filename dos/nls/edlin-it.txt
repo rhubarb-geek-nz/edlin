@@ -16,5 +16,5 @@ EDL1011E: Riga troppo lunga
 EDL1012I: Nuovo file
 EDL1013P: Nn%0
 EDL1014P: Ss%0
-EDL1015I: Impossibile modificare il file .BAK: rinominare il file
-EDL1016I: È necessario specificare il numero della riga di destinazione
+EDL1015E: Impossibile modificare il file .BAK: rinominare il file
+EDL1016E: È necessario specificare il numero della riga di destinazione

@@ -16,5 +16,5 @@ EDL1011E: Line too long
 EDL1012I: New file
 EDL1013P: Nn%0
 EDL1014P: Yy%0
-EDL1015I: Cannot edit .BAK file--rename file
-EDL1016I: Must specify destination line number
+EDL1015E: Cannot edit .BAK file--rename file
+EDL1016E: Must specify destination line number
