@@ -13,3 +13,5 @@
 #define EDLMESEN_NEWFIL "New file\r\n"
 #define EDLMESEN_NN "Nn"
 #define EDLMESEN_YY "Yy"
+#define EDLMESEN_NOBAK "Cannot edit .BAK file--rename file\r\n"
+#define EDLMESEN_DEST "Must specify destination line number\r\n"

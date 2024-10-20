@@ -16,3 +16,5 @@ EDL1011E: Erreur de longueur de chaîne
 EDL1012I: Nouveau fichier
 EDL1013P: Nn%0
 EDL1014P: Oo%0
+EDL1015I: Impossible de modifier le fichier .BAK--renommer le fichier
+EDL1016I: Doit préciser le numéro de ligne de destination

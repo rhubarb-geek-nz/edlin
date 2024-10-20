@@ -204,7 +204,9 @@ static struct
     EDLMESEN_MAP(MRGERR),
     EDLMESEN_MAP(MEMFUL),
     EDLMESEN_MAP(TOOLNG),
-    EDLMESEN_MAP(NEWFIL)
+    EDLMESEN_MAP(NEWFIL),
+    EDLMESEN_MAP(NOBAK),
+    EDLMESEN_MAP(DEST)
 };
 
 const char *edlinGetMessage(int message)

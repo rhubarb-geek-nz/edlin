@@ -16,3 +16,5 @@ EDL1011E: Zeile ist zu lang
 EDL1012I: Neue Datei
 EDL1013P: Nn%0
 EDL1014P: Jj%0
+EDL1015I: Die .BAK-Datei kann nicht bearbeitet werden. Datei umbenennen
+EDL1016I: Zielzeilennummer muss angegeben werden

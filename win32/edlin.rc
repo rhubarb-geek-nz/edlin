@@ -59,6 +59,8 @@ BEGIN
     EDLMES_NEWFIL, "New file\r\n"
     EDLMES_NN, "Nn"
     EDLMES_YY, "Yy"
+    EDLMES_NOBAK, "Cannot edit .BAK file--rename file\r\n"
+    EDLMES_DEST, "Must specify destination line number\r\n"
 END
 
 LANGUAGE LANG_GERMAN, SUBLANG_NEUTRAL
@@ -79,6 +81,8 @@ BEGIN
     EDLMES_NEWFIL, "Neue Datei\r\n"
     EDLMES_NN, "Nn"
     EDLMES_YY, "Jj"
+    EDLMES_NOBAK, "Die .BAK-Datei kann nicht bearbeitet werden. Datei umbenennen\r\n"
+    EDLMES_DEST, "Zielzeilennummer muss angegeben werden\r\n"
 END
 
 LANGUAGE LANG_FRENCH, SUBLANG_NEUTRAL
@@ -99,6 +103,8 @@ BEGIN
     EDLMES_NEWFIL, "Nouveau fichier\r\n"
     EDLMES_NN, "Nn"
     EDLMES_YY, "Oo"
+    EDLMES_NOBAK, "Impossible de modifier le fichier .BAK--renommer le fichier\r\n"
+    EDLMES_DEST, L"Doit pr\x00E9ciser le num\x00E9ro de ligne de destination\r\n"
 END
 
 LANGUAGE LANG_SPANISH, SUBLANG_NEUTRAL
@@ -119,6 +125,8 @@ BEGIN
     EDLMES_NEWFIL, "Nuevo archivo\r\n"
     EDLMES_NN, "Nn"
     EDLMES_YY, "Ss"
+    EDLMES_NOBAK, "No se puede editar el archivo .BAK: cambie el nombre del archivo\r\n"
+    EDLMES_DEST, L"Debe especificar el n\x00FAmero de l\x00BFnea de destino\r\n"
 END
 
 LANGUAGE LANG_ITALIAN, SUBLANG_NEUTRAL
@@ -139,4 +147,6 @@ BEGIN
     EDLMES_NEWFIL, "Nuovo file\r\n"
     EDLMES_NN, "Nn"
     EDLMES_YY, "Ss"
+    EDLMES_NOBAK, "Impossibile modificare il file .BAK: rinominare il file\r\n"
+    EDLMES_DEST, L"\x00C8 necessario specificare il numero della riga di destinazione\r\n"
 END

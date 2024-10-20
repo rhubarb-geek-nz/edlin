@@ -16,3 +16,5 @@ $set 1
 1012 "Nuovo file\r\n"
 1013 "Nn"
 1014 "Ss"
+1015 "Impossibile modificare il file .BAK: rinominare il file\r\n"
+1016 "È necessario specificare il numero della riga di destinazione\r\n"

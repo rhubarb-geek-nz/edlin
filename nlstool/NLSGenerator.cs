@@ -11,20 +11,22 @@ namespace nlstool
     internal enum EDLMES
     {
         EOF = 1000,
-        PROMPT = 1001,
-        QMES = 1002,
-        BADCOM = 1003,
-        ESCAPE = 1004,
-        CTRLC = 1005,
-        NDNAME = 1006,
-        NOSUCH = 1007,
-        ASK = 1008,
-        MRGERR = 1009,
-        MEMFUL = 1010,
-        TOOLNG = 1011,
-        NEWFIL = 1012,
-        NN = 1013,
-        YY = 1014
+        PROMPT,
+        QMES,
+        BADCOM,
+        ESCAPE,
+        CTRLC,
+        NDNAME,
+        NOSUCH,
+        ASK,
+        MRGERR,
+        MEMFUL,
+        TOOLNG,
+        NEWFIL,
+        NN,
+        YY,
+        NOBAK,
+        DEST
     }
 
     internal abstract class NLSGenerator

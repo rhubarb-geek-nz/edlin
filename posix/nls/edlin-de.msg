@@ -16,3 +16,5 @@ $set 1
 1012 "Neue Datei\r\n"
 1013 "Nn"
 1014 "Jj"
+1015 "Die .BAK-Datei kann nicht bearbeitet werden. Datei umbenennen\r\n"
+1016 "Zielzeilennummer muss angegeben werden\r\n"

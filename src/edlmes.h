@@ -18,3 +18,5 @@
 #define EDLMES_NEWFIL 1012
 #define EDLMES_NN     1013
 #define EDLMES_YY     1014
+#define EDLMES_NOBAK  1015
+#define EDLMES_DEST   1016

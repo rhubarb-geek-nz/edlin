@@ -37,6 +37,7 @@ long edlinArgList[4];
 const unsigned char* edlinArgValue;
 unsigned char edlinLastCommand[256];
 unsigned int edlinLastCommandLen;
+const char edlinDotBackupExtension[] = ".bak";
 
 const char edlinControlChar[] = {
 	'@','A','B','C','D','E','F','G',
@@ -1127,7 +1128,14 @@ void edlinCopy(void)
 	size_t totalCount = contentLowCount + contentHighCount;
 	size_t totalBytes;
 
-	if (edlinArgCount < 3 || edlinArgCount > 4)
+	if (edlinArgCount < 3)
+	{
+		edlinPrintMessage(EDLMES_DEST);
+		edlinArgLength = 0;
+		return;
+	}
+
+	if (edlinArgCount > 4)
 	{
 		edlinPrintMessage(EDLMES_BADCOM);
 		edlinArgLength = 0;
@@ -1188,24 +1196,24 @@ void edlinMove(void)
 	size_t byteCount;
 	const unsigned char* source;
 
-	if (edlinArgCount > 3)
+	if (edlinArgCount != 3)
 	{
-		edlinPrintMessage(EDLMES_BADCOM);
+		edlinPrintMessage(EDLMES_DEST);
 		edlinArgLength = 0;
 		return;
 	}
 
-	if (edlinArgCount && !edlinIndexFromArg(edlinArgList[0], &first))
+	if (!edlinIndexFromArg(edlinArgList[0], &first))
 	{
 		return;
 	}
 
-	if (edlinArgCount > 1 && !edlinIndexFromArg(edlinArgList[1], &last))
+	if (!edlinIndexFromArg(edlinArgList[1], &last))
 	{
 		return;
 	}
 
-	if (edlinArgCount > 2 && !edlinIndexFromArg(edlinArgList[2], &dest))
+	if (!edlinIndexFromArg(edlinArgList[2], &dest))
 	{
 		return;
 	}
@@ -1651,7 +1659,7 @@ int edlinExit(void)
 
 	if (edlinNewFile == 0)
 	{
-		if (!makeFileName(mainFileName, fileName, sizeof(fileName), ".bak"))
+		if (!makeFileName(mainFileName, fileName, sizeof(fileName), edlinDotBackupExtension))
 		{
 			return -1;
 		}
@@ -1715,6 +1723,41 @@ int edlinExit(void)
 	return 0;
 }
 
+static int edlinValidateFilename(const char* p)
+{
+	size_t i = strlen(p);
+
+	while (i--)
+	{
+		const char c = p[i];
+
+		if (c == '.')
+		{
+#ifdef EDLIN_DOSFILESYSTEM
+			if (!_stricmp(p + i, edlinDotBackupExtension))
+#else
+			if (!strcmp(p + i, edlinDotBackupExtension))
+#endif
+			{
+				edlinPrintMessage(EDLMES_NOBAK);
+
+				return -1;
+			}
+		}
+
+#ifdef EDLIN_DOSFILESYSTEM
+		if (c == '/' || c == '\\' || c == ':')
+#else
+		if (c == '/')
+#endif
+		{
+			break;
+		}
+	}
+
+	return 0;
+}
+
 int edMainLoop(int argc, char** argv)
 {
 	int err;
@@ -1731,6 +1774,11 @@ int edMainLoop(int argc, char** argv)
 			if (mainFileName)
 			{
 				edlinPrintMessage(EDLMES_BADCOM);
+				return 0;
+			}
+
+			if (edlinValidateFilename(p))
+			{
 				return 0;
 			}
 

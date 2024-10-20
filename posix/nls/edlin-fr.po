@@ -46,3 +46,9 @@ msgstr "Nn"
 # 1014, EDLMES_YY
 msgid "Yy"
 msgstr "Oo"
+# 1015, EDLMES_NOBAK
+msgid "Cannot edit .BAK file--rename file\r\n"
+msgstr "Impossible de modifier le fichier .BAK--renommer le fichier\r\n"
+# 1016, EDLMES_DEST
+msgid "Must specify destination line number\r\n"
+msgstr "Doit préciser le numéro de ligne de destination\r\n"
