@@ -140,9 +140,10 @@ then
 	SIZE=$(du -sk data/usr | while read A B; do echo $A; done)
 	mkdir data/DEBIAN
 	cat > data/DEBIAN/control <<EOF
-Package: $PKGNAME
+Package: rhubarb-geek-nz-$PKGNAME
 Version: $VERSION
 Architecture: $DPKGARCH
+Conflicts: edlin
 Installed-Size: $SIZE
 Maintainer: rhubarb-geek-nz@users.sourceforge.net
 Section: editors
@@ -152,7 +153,7 @@ Description: Text Editor based on MS-DOS edlin
  .
 EOF
 
-	dpkg-deb --root-owner-group --build data "$PKGNAME"_"$VERSION"_"$DPKGARCH".deb
+	dpkg-deb --root-owner-group --build data "rhubarb-geek-nz-$PKGNAME"_"$VERSION"_"$DPKGARCH".deb
 
 	rm -rf data/DEBIAN
 fi
